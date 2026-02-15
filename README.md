@@ -73,7 +73,7 @@ A pixel-perfect clone of [Weavy.ai](https://weavy.ai) — a visual workflow buil
 
 ```bash
 # Clone the repository
-git clone https://github.com/TuShArBhArDwA/weavy-clone.git
+git clone https://github.com/TuShArBhArDwA/weaave.git
 cd weavy-clone
 
 # Install dependencies
