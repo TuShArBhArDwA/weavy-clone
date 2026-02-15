@@ -36,7 +36,9 @@ A pixel-perfect clone of [Weavy.ai](https://weavy.ai) — a visual workflow buil
 - **Workflow History** — Full execution history with node-level details
 - **Real-time Status** — Pulsating glow effect on running nodes
 - **Parallel Execution** — Independent branches run concurrently via Trigger.dev
-- **Media Processing** — Cloud-native video processing with **FFmpeg** on Trigger.dev
+- **Media Processing** — Cloud-native video processing with **FFmpeg** on Trigger.dev (Crop, Extract Frame)
+- **Smart Timestamps** — Extract frames using seconds or percentage (e.g., "50%")
+- **Robust Execution** — Strict failure propagation and error handling
 - **File Uploads** — Secure, scalable uploads via **Transloadit**
 - **Authentication** — Clerk-powered user authentication
 - **Data Persistence** — PostgreSQL with Prisma ORM

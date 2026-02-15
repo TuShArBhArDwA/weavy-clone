@@ -64,6 +64,7 @@ Weave is a visual workflow builder that enables users to create AI-powered autom
 - **Trigger.dev Orchestrator**: Manages workflow execution order
 - **Task Workers**: Individual tasks for LLM calls, image processing
 - **Parallel Execution**: Independent branches execute concurrently
+- **Failure Handling**: Strict propagation stops execution on any error
 
 ### 4. Data Layer
 - **PostgreSQL**: Persistent storage for all application data

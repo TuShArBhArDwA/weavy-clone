@@ -112,7 +112,7 @@ interface CropNodeData {
 ```typescript
 interface ExtractFrameNodeData {
   label: string;
-  timestamp: string;  // seconds or "50%"
+  timestamp: string | number;  // seconds (e.g., 5.5) or percentage (e.g., "50%")
   status: 'idle' | 'loading' | 'success' | 'error';
 }
 // Input Handle: "video_url"
@@ -171,6 +171,7 @@ export const orchestratorTask = task({
     // 3. Execute nodes in topological order
     // 4. Trigger parallel tasks for independent nodes
     // 5. Collect results and update database
+    // 6. FAILURE HANDLING: If any node fails, stop workflow immediately. Do not retry.
   }
 });
 ```

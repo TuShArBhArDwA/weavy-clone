@@ -122,7 +122,8 @@ Make sure your `.env` has all keys configured:
 | # | Test | Steps | Expected |
 |---|------|-------|----------|
 | 7.1 | Crop Image | Upload image → connect to Crop → configure x/y/w/h% → Run workflow | Cropped image URL in output |
-| 7.2 | Extract Frame | Upload video → connect to Extract Frame → set timestamp → Run workflow | Frame image URL in output |
+| 7.2 | Extract Frame | Upload video → connect to Extract Frame → set timestamp to "50%" → Run | Frame from middle of video appears in output |
+| 7.3 | Extract Frame (Seconds) | Same as above, but set timestamp to "5.5" | Frame from 5.5s mark appears |
 
 **File**: `src/trigger/ffmpeg-tasks.ts` (tasks `crop-image`, `extract-frame`)
 
@@ -143,6 +144,7 @@ Make sure your `.env` has all keys configured:
 | 8.9 | Selective Execution | Right-click a single node → Run | Only that node executes, history entry created |
 | 8.10 | Parallel Execution | Build a workflow with 2 independent branches → Run | Both branches execute simultaneously |
 | 8.11 | Workflow Persistence | Click SAVE, refresh page, click OPEN → select saved workflow | Workflow restored with all nodes and edges |
+| 8.12 | Failure Handling | Create workflow with 2 nodes A->B. Force A to fail (e.g., bad input). Run. | Node A fails (Red). Node B stays IDLE (not skipped/running). Workflow fails. |
 
 **Files**: `FlowEditor.tsx`, `UndoRedoControls.tsx`, `CanvasControls.tsx`
 
