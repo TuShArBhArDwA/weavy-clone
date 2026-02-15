@@ -3,8 +3,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export { cropImageTask, extractFrameTask } from "./ffmpeg-tasks";
 
 // Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
 // 1. Define the Input Payload Type strictly
 interface AIJobPayload {
     prompt: string;
@@ -17,6 +15,10 @@ interface AIJobPayload {
 export const aiGenerator = task({
     id: "generate-text",
     run: async (payload: AIJobPayload) => {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) throw new Error("GEMINI_API_KEY is not set");
+        const genAI = new GoogleGenerativeAI(apiKey);
+
         // Default to 1.5-flash if model is missing or invalid
         const modelName = payload.model || "gemini-1.5-flash";
 
