@@ -40,7 +40,7 @@ const edgeTypes = {
     animatedEdge: AnimatedEdge,
 };
 
-function FlowContent() {
+function FlowContent({ isSidebarOpen }: { isSidebarOpen: boolean }) {
     const reactFlowWrapper = useRef<HTMLDivElement>(null);
     const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } = useWorkflowStore();
     const { screenToFlowPosition } = useReactFlow();
@@ -48,6 +48,56 @@ function FlowContent() {
 
     // UI State for Hand/Pan Mode
     const [isHandMode, setIsHandMode] = useState(false);
+
+    // --- Draggable MiniMap State ---
+    const [minimapPos, setMinimapPos] = useState<{ x: number; y: number } | null>(null);
+    const [isDraggingMap, setIsDraggingMap] = useState(false);
+    const dragOffset = useRef({ x: 0, y: 0 });
+
+    const onMiniMapMouseDown = (e: React.MouseEvent) => {
+        // Prevent React Flow from interpreting this as a canvas drag
+        e.stopPropagation();
+        setIsDraggingMap(true);
+
+        // Calculate offset from the top-left of the minimElement
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        dragOffset.current = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+    };
+
+    const onMouseMove = useCallback((e: MouseEvent) => {
+        if (isDraggingMap) {
+            // Calculate new position relative to the window/viewport
+            // But MiniMap is absolute inside the ReactFlow wrapper.
+            // We need coords relative to the wrapper.
+            if (reactFlowWrapper.current) {
+                const wrapperRect = reactFlowWrapper.current.getBoundingClientRect();
+                const x = e.clientX - wrapperRect.left - dragOffset.current.x;
+                const y = e.clientY - wrapperRect.top - dragOffset.current.y;
+                setMinimapPos({ x, y });
+            }
+        }
+    }, [isDraggingMap]);
+
+    const onMouseUp = useCallback(() => {
+        setIsDraggingMap(false);
+    }, []);
+
+    useEffect(() => {
+        if (isDraggingMap) {
+            window.addEventListener("mousemove", onMouseMove);
+            window.addEventListener("mouseup", onMouseUp);
+        } else {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+        }
+        return () => {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+    }, [isDraggingMap, onMouseMove, onMouseUp]);
 
     // VALIDATION LOGIC
     const isValidConnection = useCallback(
@@ -210,11 +260,30 @@ function FlowContent() {
             >
                 <Background color="#333" gap={20} size={1} />
 
-                <MiniMap
-                    className="bg-[#1a1a1a] border border-white/10 !bottom-4 !right-4"
-                    maskColor="rgba(0,0,0, 0.7)"
-                    nodeColor={() => "#dfff4f"}
-                />
+                {/* Value wrapper for MiniMap to intercept events */}
+                <div
+                    onMouseDownCapture={onMiniMapMouseDown}
+                    className={`absolute z-[5] transition-all duration-300 cursor-move ${!minimapPos ? (isSidebarOpen ? "right-[340px] bottom-4" : "right-4 bottom-4") : ""}`}
+                    style={minimapPos ? {
+                        top: minimapPos.y,
+                        left: minimapPos.x,
+                        // pointerEvents: 'auto' 
+                    } : undefined}
+                >
+                    <MiniMap
+                        // The MiniMap itself should just fill the container or be static
+                        // We remove !absolute !bottom !right from here
+                        className="!relative !m-0 !inset-0 bg-[#1a1a1a] border border-white/10"
+                        maskColor="rgba(0,0,0, 0.7)"
+                        nodeColor={() => "#dfff4f"}
+                        pannable={false}
+                        zoomable={false}
+                    />
+                    {/* Drag Handle Overlay (Optional visual cue) */}
+                    <div className="absolute top-0 right-0 p-1 cursor-move opacity-0 hover:opacity-100 transition-opacity bg-black/50 rounded-bl text-white/50 text-[10px]">
+                        Drag
+                    </div>
+                </div>
 
                 {/* 🚀 Centered Floating Bar with Undo/Redo + Zoom + Modes */}
                 <Panel position="bottom-center" className="mb-8">
@@ -228,10 +297,10 @@ function FlowContent() {
     );
 }
 
-export default function FlowEditor() {
+export default function FlowEditor({ isSidebarOpen }: { isSidebarOpen: boolean }) {
     return (
         <ReactFlowProvider>
-            <FlowContent />
+            <FlowContent isSidebarOpen={isSidebarOpen} />
         </ReactFlowProvider>
     );
 }

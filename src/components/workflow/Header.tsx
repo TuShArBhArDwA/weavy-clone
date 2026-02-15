@@ -8,7 +8,7 @@ import LoadWorkflowModal from "./LoadWorkflowModal";
 import { WorkflowData } from "@/lib/schemas";
 
 export default function Header() {
-	const { nodes, edges, workflowId, workflowName, setWorkflowId, setWorkflowName, setNodes, setEdges } = useWorkflowStore();
+	const { nodes, edges, workflowId, workflowName, setWorkflowId, setWorkflowName, setNodes, setEdges, setLastRunTimestamp } = useWorkflowStore();
 	const [isSaving, setIsSaving] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isLoadOpen, setIsLoadOpen] = useState(false);
@@ -116,6 +116,7 @@ export default function Header() {
 			const res = await runWorkflowAction(currentId);
 			if (res.success) {
 				console.log(`Workflow run started! Run ID: ${res.runId}`);
+				setLastRunTimestamp(Date.now());
 
 				if (typeof res.runId === "string") {
 					localStorage.setItem("lastRunId", res.runId);

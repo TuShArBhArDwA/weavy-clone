@@ -1,10 +1,10 @@
 "use client";
 
-import React, {useEffect, useRef, useState} from "react";
-import {X, Clock, ChevronRight, ChevronDown, Loader2, CheckCircle2, XCircle} from "lucide-react";
-import {getWorkflowHistoryAction} from "@/app/actions/historyActions";
-import {useWorkflowStore} from "@/store/workflowStore";
-import {cn} from "@/lib/utils";
+import React, { useEffect, useRef, useState } from "react";
+import { X, Clock, ChevronRight, ChevronDown, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { getWorkflowHistoryAction } from "@/app/actions/historyActions";
+import { useWorkflowStore } from "@/store/workflowStore";
+import { cn } from "@/lib/utils";
 
 interface HistorySidebarProps {
 	workflowId: string;
@@ -12,11 +12,12 @@ interface HistorySidebarProps {
 	onClose: () => void;
 }
 
-export default function HistorySidebar({workflowId, isOpen, onClose}: HistorySidebarProps) {
+export default function HistorySidebar({ workflowId, isOpen, onClose }: HistorySidebarProps) {
 	const [runs, setRuns] = useState<any[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [expandedRunId, setExpandedRunId] = useState<string | null>(null);
 	const updateNodeData = useWorkflowStore((state) => state.updateNodeData);
+	const lastRunTimestamp = useWorkflowStore((state) => state.lastRunTimestamp);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
@@ -49,19 +50,20 @@ export default function HistorySidebar({workflowId, isOpen, onClose}: HistorySid
 								],
 							});
 						} else if (execNode.status === "FAILED") {
-							updateNodeData(execNode.nodeId, {status: "error", errorMessage: execNode.error});
+							updateNodeData(execNode.nodeId, { status: "error", errorMessage: execNode.error });
 						} else if (execNode.status === "RUNNING") {
-							updateNodeData(execNode.nodeId, {status: "loading"});
+							updateNodeData(execNode.nodeId, { status: "loading" });
 						}
 					});
 
-					// Stop polling if run is finished
-					if (latestRun.status === "COMPLETED" || latestRun.status === "FAILED") {
-						if (intervalRef.current) {
-							clearInterval(intervalRef.current);
-							intervalRef.current = null;
-						}
-					}
+					// Removed: Logic that stops polling if run is finished.
+					// We want to KEEP polling to see NEW runs if user clicks "Run" again.
+					// if (latestRun.status === "COMPLETED" || latestRun.status === "FAILED") {
+					// 	if (intervalRef.current) {
+					// 		clearInterval(intervalRef.current);
+					// 		intervalRef.current = null;
+					// 	}
+					// }
 				}
 			}
 		};
@@ -81,7 +83,7 @@ export default function HistorySidebar({workflowId, isOpen, onClose}: HistorySid
 				intervalRef.current = null;
 			}
 		};
-	}, [workflowId, isOpen, updateNodeData]);
+	}, [workflowId, isOpen, updateNodeData, lastRunTimestamp]);
 
 	if (!isOpen) return null;
 
@@ -184,7 +186,7 @@ export default function HistorySidebar({workflowId, isOpen, onClose}: HistorySid
 }
 
 // --- Icons ---
-function StatusIcon({status, size = 16}: {status: string; size?: number}) {
+function StatusIcon({ status, size = 16 }: { status: string; size?: number }) {
 	if (status === "SUCCESS" || status === "COMPLETED") return <CheckCircle2 size={size} className="text-emerald-500" />;
 	if (status === "FAILED") return <XCircle size={size} className="text-red-500" />;
 	if (status === "RUNNING") return <Loader2 size={size} className="text-[#dfff4f] animate-spin" />;

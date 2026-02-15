@@ -1,15 +1,15 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useParams} from "next/navigation";
-import {Loader2, Clock} from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Loader2, Clock } from "lucide-react";
 import dynamic from "next/dynamic";
 import Sidebar from "@/components/workflow/Sidebar";
 import SidebarNodeList from "@/components/workflow/SidebarNodeList";
 import Header from "@/components/workflow/Header";
-import {useWorkflowStore} from "@/store/workflowStore";
-import {loadWorkflowAction} from "@/app/actions/workflowActions";
-import {DEMO_WORKFLOWS} from "@/lib/demoWorkflows";
+import { useWorkflowStore } from "@/store/workflowStore";
+import { loadWorkflowAction } from "@/app/actions/workflowActions";
+import { DEMO_WORKFLOWS } from "@/lib/demoWorkflows";
 import HistorySidebar from "@/components/workflow/HistorySidebar"; // Ensure this import exists
 
 // 1. DYNAMIC IMPORT: Disables SSR for the Canvas
@@ -23,7 +23,7 @@ export default function EditorPage() {
 	const workflowId = params.id as string;
 
 	const [loading, setLoading] = useState(true);
-	const {setWorkflowId} = useWorkflowStore();
+	const { setWorkflowId } = useWorkflowStore();
 	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
 
@@ -44,7 +44,7 @@ export default function EditorPage() {
 				console.log("Loading Demo Template:", demo.name);
 
 				// Get the graph data from the function
-				const {nodes, edges} = demo.getGraph();
+				const { nodes, edges } = demo.getGraph();
 
 				useWorkflowStore.setState({
 					nodes: nodes,
@@ -140,7 +140,7 @@ export default function EditorPage() {
 				</Sidebar>
 
 				<main className="flex h-screen w-full bg-[#0a0a0a] relative overflow-hidden">
-					<FlowEditor />
+					<FlowEditor isSidebarOpen={isSidebarOpen} />
 
 					{/* Sidebar Toggle Button */}
 					<button

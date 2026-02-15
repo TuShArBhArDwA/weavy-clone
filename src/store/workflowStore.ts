@@ -38,6 +38,8 @@ type WorkflowState = {
     setNodes: (nodes: AppNode[]) => void;
     setEdges: (edges: Edge[]) => void;
     clearUserData: () => void;
+    lastRunTimestamp: number | null;
+    setLastRunTimestamp: (timestamp: number) => void;
 };
 
 // Initial Data - Empty canvas
@@ -154,6 +156,10 @@ export const useWorkflowStore = create<WorkflowState>()(
                         workflowId: null,
                         workflowName: "Untitled Workflow",
                     });
+                },
+                lastRunTimestamp: null,
+                setLastRunTimestamp: (timestamp: number) => {
+                    set({ lastRunTimestamp: timestamp });
                 },
             }),
             {
