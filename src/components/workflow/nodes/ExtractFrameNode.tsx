@@ -53,12 +53,13 @@ export default function ExtractFrameNode({ id, data, isConnectable, selected }: 
             }
 
             // Resolve Timestamp Input
-            const getParamValue = (handleId: string, defaultValue: number) => {
+            const getParamValue = (handleId: string, defaultValue: number | string) => {
                 const edge = allEdges.find(e => e.target === id && e.targetHandle === handleId);
                 if (edge) {
                     const sourceNode = allNodes.find(n => n.id === edge.source);
                     if (sourceNode && sourceNode.type === "textNode") {
-                        return parseFloat((sourceNode.data as any).text) || defaultValue;
+                        const val = (sourceNode.data as any).text;
+                        return val;
                     }
                 }
                 return defaultValue;
@@ -174,14 +175,13 @@ export default function ExtractFrameNode({ id, data, isConnectable, selected }: 
                 {/* Parameters */}
                 <div className="relative">
                     <Handle type="target" position={Position.Left} id="timestamp" className="!bg-blue-400" style={{ left: -18, top: '65%' }} />
-                    <label className="text-[10px] text-white/50 block mb-1">Timestamp (seconds)</label>
+                    <label className="text-[10px] text-white/50 block mb-1">Timestamp (seconds or %)</label>
                     <input
-                        type="number"
-                        min="0"
-                        step="0.1"
-                        value={data.timestamp || 0}
+                        type="text"
+                        placeholder="e.g. 5.5 or 50%"
+                        value={data.timestamp || ""}
                         disabled={isTimestampConnected}
-                        onChange={(e) => updateNodeData(id, { timestamp: parseFloat(e.target.value) })}
+                        onChange={(e) => updateNodeData(id, { timestamp: e.target.value })}
                         className={cn("w-full bg-[#0a0a0a] border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-[#dfff4f]/50", isTimestampConnected && "opacity-50 cursor-not-allowed")}
                     />
                 </div>

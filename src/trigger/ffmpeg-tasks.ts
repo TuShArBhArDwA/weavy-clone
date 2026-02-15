@@ -115,9 +115,60 @@ export const cropImageTask = task({
 // FFmpeg Task: Extract Frame
 export const extractFrameTask = task({
     id: "extract-frame",
-    run: async (payload: { videoUrl: string; timestamp: number }) => {
+    run: async (payload: { videoUrl: string; timestamp: number | string }) => {
         const { videoUrl, timestamp } = payload;
-        console.log(`[Extract Task] Starting for ${videoUrl} at ${timestamp}s`);
+        console.log(`[Extract Task] Starting for ${videoUrl} at ${timestamp}`);
+
+        const safeTimestamp = async (): Promise<number> => {
+            // Case 1: Already a number
+            if (typeof timestamp === "number") return timestamp;
+
+            // Case 2: String number (e.g. "5.5")
+            if (!timestamp.includes("%")) {
+                const parsed = parseFloat(timestamp);
+                if (!isNaN(parsed)) return parsed;
+            }
+
+            // Case 3: Percentage (e.g. "50%")
+            // We need video duration.
+            console.log("[Extract Task] Percentage detected. Fetching video duration...");
+            const ffmpegPath = ffmpeg || "ffmpeg";
+
+            // Use ffprobe or ffmpeg to get duration. 
+            // Since we only have ffmpeg-static usually, let's parse ffmpeg -i output.
+            let stderrOutput = "";
+            try {
+                // We expect this to fail because no output file is specified
+                await execAsync(`"${ffmpegPath}" -i "${videoUrl}"`);
+            } catch (error: any) {
+                // ffmpeg -i exits with code 1 if no output file is provided.
+                // This is expected. We just want the stderr.
+                stderrOutput = error.stderr || "";
+            }
+
+            // Look for "Duration: 00:00:10.50,"
+            const match = stderrOutput.match(/Duration: (\d{2}):(\d{2}):(\d{2})\.(\d{2})/);
+            if (!match) {
+                console.warn("[Extract Task] Could not parse duration from ffmpeg output.");
+                throw new Error("Could not determine video duration for percentage calculation.");
+            }
+
+            const hours = parseInt(match[1]);
+            const minutes = parseInt(match[2]);
+            const seconds = parseInt(match[3]);
+            const centiseconds = parseInt(match[4]);
+
+            const totalSeconds = (hours * 3600) + (minutes * 60) + seconds + (centiseconds / 100);
+            console.log(`[Extract Task] Video Duration: ${totalSeconds}s`);
+
+            const percentage = parseFloat(timestamp.replace("%", ""));
+            if (isNaN(percentage)) throw new Error("Invalid percentage format");
+
+            return totalSeconds * (percentage / 100);
+        };
+
+        const finalTimestamp = await safeTimestamp();
+        console.log(`[Extract Task] Final timestamp: ${finalTimestamp}s`);
 
         const tempDir = os.tmpdir();
         const outputPath = path.join(tempDir, `frame-${Date.now()}.jpg`);
@@ -125,7 +176,7 @@ export const extractFrameTask = task({
 
         // 2. Extract - reads directly from URL if possible, usually yes for ffmpeg
         // -y to overwrite, -ss before -i for faster seeking
-        await execAsync(`"${ffmpegPath}" -y -ss ${timestamp} -i "${videoUrl}" -frames:v 1 -q:v 2 "${outputPath}"`);
+        await execAsync(`"${ffmpegPath}" -y -ss ${finalTimestamp} -i "${videoUrl}" -frames:v 1 -q:v 2 "${outputPath}"`);
 
         // 3. Upload
         try {

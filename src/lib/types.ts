@@ -100,7 +100,7 @@ export interface CropImageNodeData extends BaseNodeData {
 // -- Extract Frame from Video Node (FFmpeg via Trigger.dev) --
 export interface ExtractFrameNodeData extends BaseNodeData {
     videoUrl?: string;         // Input video URL (from connection or manual)
-    timestamp: number;         // Seconds into the video
+    timestamp: number | string;         // Seconds into the video or percentage (e.g. "50%")
     outputUrl?: string;        // Extracted frame image URL (result)
 }
 
@@ -146,6 +146,6 @@ export interface LoadWorkflowModalProps {
 }
 
 export interface SidebarProps {
-	children: React.ReactNode;
-	defaultCollapsed?: boolean;
+    children: React.ReactNode;
+    defaultCollapsed?: boolean;
 }

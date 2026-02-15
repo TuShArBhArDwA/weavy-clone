@@ -83,6 +83,9 @@ function getExecutionLayers(nodes: NodeData[], edges: EdgeData[]): NodeData[][] 
 
 export const orchestrator = task({
     id: "workflow-orchestrator",
+    retry: {
+        maxAttempts: 1, // Prevent auto-retries of the workflow itself
+    },
     run: async (payload: { runId: string }) => {
         // 1. Load Workflow
         const run = await prisma.workflowRun.findUnique({
@@ -110,9 +113,15 @@ export const orchestrator = task({
             data: { status: "RUNNING", startedAt: new Date() }
         });
 
+        let workflowFailed = false;
+
         try {
             // 5. Execution Loop (Layer by Layer)
             for (const [index, layer] of layers.entries()) {
+                if (workflowFailed) {
+                    console.log("🛑 [Orchestrator] Workflow failed, skipping remaining layers.");
+                    break;
+                }
                 console.log(`⚡ [Orchestrator] Executing Layer ${index + 1} with ${layer.length} nodes`);
 
                 // Run all nodes in this layer executing concurrently
@@ -247,12 +256,16 @@ export const orchestrator = task({
                                 where: { id: executionRecord.id },
                                 data: { status: "FAILED", finishedAt: new Date(), error: String(error) }
                             });
-                            throw error;
+                            workflowFailed = true; // Mark global failure
+                            // Do NOT throw, allowing other parallel tasks to potentially finish or fail gracefully
                         }
                     };
 
                     triggerPromises.push(triggerFn());
                 }
+
+                // If any trigger failed immediately (sync error), stop.
+                if (workflowFailed) break;
 
                 // Execute all triggers in parallel
                 if (triggerPromises.length > 0) {
@@ -333,17 +346,29 @@ export const orchestrator = task({
                             where: { id: task.executionId },
                             data: { status: "FAILED", finishedAt: new Date(), error: String(error) }
                         });
-                        throw error;
+                        workflowFailed = true;
                     }
                 }
 
+                if (workflowFailed) break; // Break layer loop
             }
 
             // 6. Complete Run
-            await prisma.workflowRun.update({
-                where: { id: run.id },
-                data: { status: "COMPLETED", finishedAt: new Date() }
-            });
+            if (workflowFailed) {
+                console.log("🛑 [Orchestrator] Run marked as FAILED due to node errors.");
+                await prisma.workflowRun.update({
+                    where: { id: run.id },
+                    data: { status: "FAILED", finishedAt: new Date() }
+                });
+                // Return failure but do NOT throw to prevent Task Retry
+                return { success: false, error: "Workflow failed due to node errors" };
+            } else {
+                await prisma.workflowRun.update({
+                    where: { id: run.id },
+                    data: { status: "COMPLETED", finishedAt: new Date() }
+                });
+                return { success: true };
+            }
 
         } catch (error) {
             console.error("Workflow Run Warning/Error:", error);
@@ -351,9 +376,8 @@ export const orchestrator = task({
                 where: { id: run.id },
                 data: { status: "FAILED", finishedAt: new Date() }
             });
-            throw error;
+            // Do NOT throw to prevent Orchestrator Retry
+            return { success: false, error: String(error) };
         }
-
-        return { success: true };
     },
 });
