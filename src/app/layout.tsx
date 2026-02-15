@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 // Removed invalid GeistSans import and usage
 
 export const metadata: Metadata = {
-	title: "Weavy Clone",
-	description: "A clone app inpired from Weavy",
+	title: "Weaave",
+	description: "Build, connect, and deploy AI workflows visually",
 };
 
 export default function RootLayout({
