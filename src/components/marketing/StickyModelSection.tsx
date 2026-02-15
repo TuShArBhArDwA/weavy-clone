@@ -1,28 +1,28 @@
-import {useRef, useState} from "react";
-import {motion, useScroll, useMotionValueEvent, useTransform} from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
 import Image from "next/image";
 
 // --- DATA ---
 const aiModels = [
-	{name: "GPT img 1", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887e82ac8a8bb8139ebd_GPT%20img%201.avif"},
-	{name: "Wan", type: "video", src: "https://assets.weavy.ai/homepage/mobile-videos/wan.mp4"},
-	{name: "SD 3.5", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d618a9071dd147d5f_SD%203.5.avif"},
-	{name: "Runway Gen-4", type: "video", src: "https://assets.weavy.ai/homepage/mobile-videos/runway.mp4"},
-	{name: "Imagen 3", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d65bf65cc5194ac05_Imagen%203.avif"},
-	{name: "Veo 3", type: "video", src: "https://assets.weavy.ai/homepage/mobile-videos/veo2.mp4"},
-	{name: "GPT img 1", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887e82ac8a8bb8139ebd_GPT%20img%201.avif"},
-	{name: "Wan", type: "video", src: "https://assets.weavy.ai/homepage/mobile-videos/wan.mp4"},
-	{name: "SD 3.5", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d618a9071dd147d5f_SD%203.5.avif"},
-	{name: "Runway Gen-4", type: "video", src: "https://assets.weavy.ai/homepage/mobile-videos/runway.mp4"},
-	{name: "Imagen 3", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d65bf65cc5194ac05_Imagen%203.avif"},
-	{name: "Veo 3", type: "video", src: "https://assets.weavy.ai/homepage/mobile-videos/veo2.mp4"},
+	{ name: "GPT img 1", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887e82ac8a8bb8139ebd_GPT%20img%201.avif" },
+	{ name: "Wan", type: "video", src: "https://assets.weaave.ai/homepage/mobile-videos/wan.mp4" },
+	{ name: "SD 3.5", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d618a9071dd147d5f_SD%203.5.avif" },
+	{ name: "Runway Gen-4", type: "video", src: "https://assets.weaave.ai/homepage/mobile-videos/runway.mp4" },
+	{ name: "Imagen 3", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d65bf65cc5194ac05_Imagen%203.avif" },
+	{ name: "Veo 3", type: "video", src: "https://assets.weaave.ai/homepage/mobile-videos/veo2.mp4" },
+	{ name: "GPT img 1", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887e82ac8a8bb8139ebd_GPT%20img%201.avif" },
+	{ name: "Wan", type: "video", src: "https://assets.weaave.ai/homepage/mobile-videos/wan.mp4" },
+	{ name: "SD 3.5", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d618a9071dd147d5f_SD%203.5.avif" },
+	{ name: "Runway Gen-4", type: "video", src: "https://assets.weaave.ai/homepage/mobile-videos/runway.mp4" },
+	{ name: "Imagen 3", type: "image", src: "https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825887d65bf65cc5194ac05_Imagen%203.avif" },
+	{ name: "Veo 3", type: "video", src: "https://assets.weaave.ai/homepage/mobile-videos/veo2.mp4" },
 ];
 
 export default function StickyModelSection() {
 	const targetRef = useRef<HTMLDivElement>(null);
 	const [activeIndex, setActiveIndex] = useState(0);
 
-	const {scrollYProgress} = useScroll({
+	const { scrollYProgress } = useScroll({
 		target: targetRef,
 		offset: ["start start", "end end"],
 	});
@@ -45,9 +45,9 @@ export default function StickyModelSection() {
 					{aiModels.map((model, idx) => (
 						<motion.div
 							key={idx}
-							initial={{opacity: 0}}
-							animate={{opacity: activeIndex === idx ? 1 : 0}}
-							transition={{duration: 0.5, ease: "linear"}}
+							initial={{ opacity: 0 }}
+							animate={{ opacity: activeIndex === idx ? 1 : 0 }}
+							transition={{ duration: 0.5, ease: "linear" }}
 							className="absolute inset-0 w-full h-full">
 							{model.type === "video" ? (
 								<video src={model.src} autoPlay loop muted className="w-full h-full object-cover scale-105" />
@@ -75,15 +75,14 @@ export default function StickyModelSection() {
 
 					{/* Scrollable list */}
 					<div className="w-full md:col-span-5 h-full overflow-hidden flex items-center md:items-start justify-center md:justify-start relative pl-0 md:pl-10">
-						<motion.div style={{y}} className="flex flex-col items-start text-left gap-2 md:gap-4 w-full pt-2 md:pt-[20vh]">
+						<motion.div style={{ y }} className="flex flex-col items-start text-left gap-2 md:gap-4 w-full pt-2 md:pt-[20vh]">
 							{aiModels.map((model, idx) => {
 								const isActive = activeIndex === idx;
 								return (
 									<div
 										key={idx}
-										className={`text-[30px] md:text-[3.5vw] font-medium tracking-tight leading-[1.1] cursor-pointer transition-colors ${
-											isActive ? "text-[#dfff4f]" : "text-white"
-										}`}>
+										className={`text-[30px] md:text-[3.5vw] font-medium tracking-tight leading-[1.1] cursor-pointer transition-colors ${isActive ? "text-[#dfff4f]" : "text-white"
+											}`}>
 										{model.name}
 									</div>
 								);

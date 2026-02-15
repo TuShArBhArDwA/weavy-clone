@@ -10,7 +10,7 @@ const ParallaxShowcase = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScrollProgress();
   const { mousePos, handleMouseMove, handleMouseLeave } = useMousePosition(sectionRef);
-  
+
   // 1. Detect Mobile
   const isMobile = useMediaQuery('(max-width: 768px)');
 
@@ -76,7 +76,7 @@ const ParallaxShowcase = () => {
 
           <img
             src="https://cdn.prod.website-files.com/681b040781d5b5e278a69989/682ee0eea4106dbd4133065d_Weavy%20UI.avif"
-            alt="Weavy UI Interface"
+            alt="Weaave UI Interface"
             className="absolute inset-0 w-full h-auto object-contain z-10 pointer-events-none"
           />
 
@@ -85,13 +85,13 @@ const ParallaxShowcase = () => {
             alt="Spaceship"
             className="absolute w-[68%] h-auto object-contain z-10"
             // If you want the spaceship centered on mobile too, add similar logic here:
-            style={{ 
-              left: isMobile ? '50%' : '16%', 
+            style={{
+              left: isMobile ? '50%' : '16%',
               top: isMobile ? '22.8%' : '1%',
-              transform: isMobile ? 'translate(-50%, -50%)' : 'none' 
+              transform: isMobile ? 'translate(-50%, -50%)' : 'none'
             }}
           />
-          
+
           <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
             {PARALLAX.map((image, idx) => (
               <img
@@ -99,7 +99,7 @@ const ParallaxShowcase = () => {
                 src={image.src}
                 alt={image.alt}
                 className={image.className}
-                style={{ 
+                style={{
                   transform: calcTransform(image),
                   // 4. Mobile Overrides: Force position to absolute center
                   left: isMobile ? '50%' : undefined,
@@ -108,7 +108,7 @@ const ParallaxShowcase = () => {
                   right: isMobile ? 'auto' : undefined,
                   bottom: isMobile ? 'auto' : undefined,
                   // Optional: Scale down slightly on mobile if they are huge
-                  maxWidth: isMobile ? '80%' : undefined 
+                  maxWidth: isMobile ? '80%' : undefined
                 }}
               />
             ))}

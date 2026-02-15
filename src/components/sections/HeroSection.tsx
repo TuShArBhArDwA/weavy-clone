@@ -7,7 +7,7 @@ import {
   useEdgesState,
   addEdge,
   Connection,
-  Edge, 
+  Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -24,12 +24,12 @@ const nodeTypes = {
 // Hero section with interactive React Flow diagram
 const HeroSection = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
-  
+
   const nodesData = useMemo(() => isMobile ? NODES_MOBILE : NODES_DESKTOP, [isMobile]);
   const bounds = useMemo(() => isMobile ? EXTENT_MOBILE : EXTENT_DESKTOP, [isMobile]);
-  
+
   const [nodes, , onNodesChange] = useNodesState(nodesData);
-  
+
   const styledEdges = useMemo(() => {
     // 2. Explicitly type the 'edge' parameter here
     return EDGES.map((edge: Edge) => ({
@@ -41,7 +41,7 @@ const HeroSection = () => {
       },
     }));
   }, []);
-  
+
   const [edges, setEdges, onEdgesChange] = useEdgesState(styledEdges);
 
   const onConnect = useCallback(
@@ -70,25 +70,25 @@ const HeroSection = () => {
         }}
       />
       <div className="absolute mr-2 top-24 md:top-32 left-4 md:left-16 z-10 pointer-events-none select-none max-w-7xl">
-  <div className="flex flex-col gap-6 md:gap-8">
-    <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-25">
-      <h1 className=" text-6xl lg:text-8xl leading-none tracking-tight text-black font-normal">
-        Weavy
-      </h1>
-      <div className="flex flex-col md:items-start items-end">
-        <h2 className="text-6xl lg:text-8xl leading-none tracking-tight text-black font-normal pl-10">
-          Artistic Intelligence
-        </h2>
+        <div className="flex flex-col gap-6 md:gap-8">
+          <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-25">
+            <h1 className=" text-6xl lg:text-8xl leading-none tracking-tight text-black font-normal">
+              Weaave
+            </h1>
+            <div className="flex flex-col md:items-start items-end">
+              <h2 className="text-6xl lg:text-8xl leading-none tracking-tight text-black font-normal pl-10">
+                Artistic Intelligence
+              </h2>
+            </div>
+          </div>
+
+          <div className="md:pl-80  ">
+            <p className="max-w-md md:max-w-lg text-base tracking-wide md:text-lg text-black/90 pl-24 font-light leading-none">
+              Turn your creative vision into scalable workflows. Access all AI models and professional editing tools in one node based platform.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-    
-    <div className="md:pl-80  ">
-      <p className="max-w-md md:max-w-lg text-base tracking-wide md:text-lg text-black/90 pl-24 font-light leading-none">
-        Turn your creative vision into scalable workflows. Access all AI models and professional editing tools in one node based platform.
-      </p>
-    </div>
-  </div>
-</div>
 
       <div
         className="absolute bottom-0 md:bottom-[-30px] left-0 md:left-[5%] w-full md:w-[90%] h-[60%] h-[calc(20%+200px)] md:h-[calc(50%+100px)] rounded-b-lg z-1 overflow-hidden bg-gradient-to-b from-transparent to-[#D0D9D2] to-92%"

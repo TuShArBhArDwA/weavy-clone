@@ -5,7 +5,7 @@
 ![Trigger.dev](https://img.shields.io/badge/Trigger.dev-Enabled-green)
 ![help](https://github.com/user-attachments/assets/6ab768b5-cf0f-416e-be80-a450f1e63094)
 
-A pixel-perfect clone of [Weavy.ai](https://weavy.ai) — a visual workflow builder for LLM-powered automations. Built with React Flow, Google Gemini AI, and Trigger.dev.
+A pixel-perfect clone of [Weaave.ai](https://weaave.ai) — a visual workflow builder for LLM-powered automations. Built with React Flow, Google Gemini AI, and Trigger.dev.
 
 
 
@@ -74,7 +74,7 @@ A pixel-perfect clone of [Weavy.ai](https://weavy.ai) — a visual workflow buil
 ```bash
 # Clone the repository
 git clone https://github.com/TuShArBhArDwA/weaave.git
-cd weavy-clone
+cd weaave-clone
 
 # Install dependencies
 npm install

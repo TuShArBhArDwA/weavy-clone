@@ -12,13 +12,13 @@ export default function WorkflowsCarousel() {
     useHorizontalScroll({ scrollAmount: 400 });
   const isResettingRef = useRef(false);
 
-   // DRAG STATE
+  // DRAG STATE
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollStart = useRef(0);
 
   const loopedCards = [...WORKFLOWS, ...WORKFLOWS, ...WORKFLOWS];
-  
+
 
   useEffect(() => {
     const container = scrollRef.current;
@@ -66,7 +66,7 @@ export default function WorkflowsCarousel() {
     return () => container.removeEventListener('scroll', handleScroll);
   }, [scrollRef]);
 
-    // 👉 DRAG HANDLERS (ADDED)
+  // 👉 DRAG HANDLERS (ADDED)
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!scrollRef.current) return;
     isDragging.current = true;
@@ -93,7 +93,7 @@ export default function WorkflowsCarousel() {
               Explore Our<br />Workflows
             </h2>
             <p className="text-white text-[15px] md:text-[16px] tracking-wider">
-              From multi-layer compositing to matte manipulation, Weavy keeps up
+              From multi-layer compositing to matte manipulation, Weaave keeps up
               with your creativity with all the editing tools you recognize and
               rely on.
             </p>
@@ -106,9 +106,9 @@ export default function WorkflowsCarousel() {
         <div
           ref={scrollRef}
           onMouseDown={onMouseDown}
-  onMouseMove={onMouseMove}
-  onMouseUp={stopDragging}
-  onMouseLeave={stopDragging}
+          onMouseMove={onMouseMove}
+          onMouseUp={stopDragging}
+          onMouseLeave={stopDragging}
           className="flex gap-[18px] overflow-x-auto scrollbar-hide px-[5%] cursor-grab active:cursor-grabbing select-none"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
@@ -121,7 +121,7 @@ export default function WorkflowsCarousel() {
         </div>
       </div>
 
-      {/* NAVIGATION — BELOW CAROUSEL (LEFT ALIGNED, WEAVY STYLE) */}
+      {/* NAVIGATION — BELOW CAROUSEL (LEFT ALIGNED, WEAAVE STYLE) */}
       <div className="container px-[5%] max-w-[1440px] mx-auto mt-[16px] md:mt-[24px]">
         <div className="flex justify-start gap-[10px]">
           <NavigationButton
@@ -187,16 +187,16 @@ const WorkflowCardComponent = ({ workflow }: WorkflowCardComponentProps) => {
     <div className="workflow-card flex-shrink-0 w-[320px] md:w-[400px] lg:w-[420px] group/card">
       <div className="mb-[16px]">
         <p
-  className="
+          className="
     text-[1.5rem]
     text-white
     pb-2
     transition-colors duration-300
     group-hover/card:text-[#f7ff9e]
   "
->
-  {workflow.title}
-</p>
+        >
+          {workflow.title}
+        </p>
 
       </div>
 

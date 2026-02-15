@@ -173,7 +173,7 @@ export const TOOL_DEFAULT = 'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1
 // Workflow cards
 export const WORKFLOWS: WorkflowCard[] = [
     { id: 'camera-angle', title: 'Camera Angle Control', image: 'https://cdn.prod.website-files.com/681b040781d5b5e278a69989/681f925d9ecbfaf69c5dc170_Workflow%2004.avif' },
-    { id: 'Wjnj', title: 'Weavy Logo', image: 'https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825b0ac314fefe464791808_Relight%202.0%20human.avif' },
+    { id: 'Wjnj', title: 'Weaave Logo', image: 'https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825b0ac314fefe464791808_Relight%202.0%20human.avif' },
     { id: 'relight-2-human', title: 'Relight 2.0 human', image: 'https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825b0acdb693fa2102f0af2_Weavy%20Logo.avif' },
     { id: 'wan-lora-rotate', title: 'Wan Lora – Rotate', image: 'https://cdn.prod.website-files.com/681b040781d5b5e278a69989/6825b0acc901ee5c718efc90_Wan%20Lora%20-%20Rotate.avif' },
     { id: 'multiple-models', title: 'Multiple Models', image: 'https://cdn.prod.website-files.com/681b040781d5b5e278a69989/681f925d9ecbfaf69c5dc16a_Workflow%2002.avif' },
@@ -214,11 +214,11 @@ export const FOOTER_NAV: FooterColumn[] = [
 
 // Social links
 export const SOCIALS: SocialLink[] = [
-    { platform: 'LinkedIn', href: 'https://www.linkedin.com/company/weavy-ai', icon: 'linkedin' },
-    { platform: 'Instagram', href: 'https://www.instagram.com/weavy_ai/', icon: 'instagram' },
-    { platform: 'Twitter', href: 'https://x.com/Weavy_ai', icon: 'twitter' },
+    { platform: 'LinkedIn', href: 'https://www.linkedin.com/company/weaave-ai', icon: 'linkedin' },
+    { platform: 'Instagram', href: 'https://www.instagram.com/weaave_ai/', icon: 'instagram' },
+    { platform: 'Twitter', href: 'https://x.com/Weaave_ai', icon: 'twitter' },
     { platform: 'Discord', href: 'https://discord.gg/jB6vn2ewxW', icon: 'discord' },
-    { platform: 'YouTube', href: 'https://www.youtube.com/@Weavy-ai', icon: 'youtube' },
+    { platform: 'YouTube', href: 'https://www.youtube.com/@Weaave-ai', icon: 'youtube' },
 ];
 
 // Footer images

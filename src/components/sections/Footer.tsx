@@ -2,24 +2,24 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import {
-  BsInstagram,
-  BsLinkedin,
-  BsTwitter,
-  BsDiscord,
-  BsYoutube,
-} from "react-icons/bs";
+import { Github, Linkedin, Coffee, Youtube } from "lucide-react";
 import { GoPlus } from "react-icons/go";
 import { FOOTER_NAV, SOCIALS, FOOTER_IMAGES } from "./data";
 import type { SocialLink } from "./types";
 
-const SocialIcons: Record<SocialLink["icon"], React.ComponentType> = {
-  linkedin: BsLinkedin,
-  instagram: BsInstagram,
-  twitter: BsTwitter,
-  discord: BsDiscord,
-  youtube: BsYoutube,
-};
+// X (Twitter) icon
+const XIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+// Medium Icon
+const MediumIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
+  </svg>
+);
 
 const Footer = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -54,7 +54,7 @@ const Footer = () => {
   "
     >
       {/* =========================
-         EXACT WEAVY SVG NODE (TOPMOST)
+         EXACT WEAAVE SVG NODE (TOPMOST)
          ========================= */}
       {/* <img
   src="https://cdn.prod.website-files.com/681b040781d5b5e278a69989/682231a73b5be7ff98f935ac_footer%20Node.svg"
@@ -96,7 +96,7 @@ const Footer = () => {
           <div className="flex items-center justify-between mb-8 md:hidden">
             <img
               src={FOOTER_IMAGES.logo}
-              alt="Weavy Artistic Intelligence"
+              alt="Weaave Artistic Intelligence"
               className="h-[32px] w-auto"
             />
             <Link
@@ -111,11 +111,11 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row md:max-w-[80%] gap-4 md:gap-10">
               <img
                 src={FOOTER_IMAGES.logo}
-                alt="Weavy Artistic Intelligence"
+                alt="Weaave Artistic Intelligence"
                 className="h-[40px] w-auto hidden md:block"
               />
               <p className="text-white text-[13px] leading-[1.7] font-light">
-                <span className="font-normal">Weavy</span> is a new way to
+                <span className="font-normal">Weaave</span> is a new way to
                 create. We&apos;re bridging the gap between AI capabilities and
                 human creativity, to continue the tradition of craft in artistic
                 expression. We call it Artistic Intelligence.
@@ -123,41 +123,26 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-10 mb-10 md:mb-14">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              {FOOTER_NAV.map((column) => (
-                <div key={column.title}>
-                  <span className="text-white/80 text-[11px] uppercase tracking-[0.1em] mb-4 block">
-                    {column.title}
-                  </span>
-                  <div className="flex flex-col gap-2.5">
-                    {column.links.map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.href}
-                        className="text-white text-[12px] uppercase hover:opacity-60 transition"
-                      >
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
+          <div className="flex flex-col gap-6 mb-10 md:mb-14">
+            <div className="flex gap-6 pt-1">
+              {[
+                { icon: Github, href: "https://github.com/TuShArBhArDwA" },
+                { icon: Linkedin, href: "https://www.linkedin.com/in/bhardwajtushar2004/" },
+                { icon: Coffee, href: "https://buymeacoffee.com/tusharbhardwaj" },
+                { icon: Youtube, href: "https://www.youtube.com/channel/UCqq8kNn9yKvsl95MeiFPIeg" },
+                { icon: MediumIcon, href: "https://medium.com/@bhardwajtushar2004", isCustom: true },
+                { icon: XIcon, href: "https://x.com/Tusharab2004", isCustom: true },
+              ].map((social, i) => (
+                <a
+                  key={i}
+                  href={social.href}
+                  className="text-white text-lg hover:opacity-60"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {social.isCustom ? <social.icon /> : <social.icon size={20} strokeWidth={1.5} />}
+                </a>
               ))}
-            </div>
-
-            <div className="hidden md:flex gap-6 pt-1">
-              {SOCIALS.map((social) => {
-                const Icon = SocialIcons[social.icon];
-                return (
-                  <a
-                    key={social.platform}
-                    href={social.href}
-                    className="text-white text-lg hover:opacity-60"
-                  >
-                    <Icon />
-                  </a>
-                );
-              })}
             </div>
           </div>
 
@@ -177,9 +162,17 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="text-[10px] uppercase tracking-[0.12em] text-[#1A1A1A]/80 flex gap-4">
-            <span>WEAVY © 2025</span>
-            <span>ALL RIGHTS RESERVED</span>
+          <div className="flex items-center gap-2 mt-4 text-[12px] font-medium tracking-[0.05em] text-[#1A1A1A]/80">
+            <span>Fuel the creativity</span>
+            <a
+              href="https://buymeacoffee.com/tusharbhardwaj"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 hover:text-[#111] transition-colors border-b border-black/20 hover:border-black/50"
+            >
+              <Coffee size={14} />
+              <span>Buy Me A Coffee</span>
+            </a>
           </div>
         </div>
       </div>

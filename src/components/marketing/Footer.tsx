@@ -1,4 +1,4 @@
-import {Linkedin, Instagram, Youtube} from "lucide-react";
+import { Linkedin, Instagram, Youtube, Github, Coffee } from "lucide-react";
 
 // X (Twitter) icon
 const XIcon = () => (
@@ -14,8 +14,15 @@ const DiscordIcon = () => (
 	</svg>
 );
 
-// Weavy Logo
-const WeavyLogo = () => (
+// Medium Icon
+const MediumIcon = () => (
+	<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+		<path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
+	</svg>
+);
+
+// Weaave Logo
+const WeaaveLogo = () => (
 	<svg width="80" height="20" viewBox="0 0 130 32" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<path d="M16.4 0H9.8L6.6 12.3L3.4 0H0L5 19.2H8.2L11.4 6.9L14.6 19.2H17.8L22.8 0H19.4L16.4 12.3L16.4 0Z" fill="currentColor" />
 		<path d="M33.2 19.2H43.6V16.4H36.6V11.1H42.8V8.3H36.6V2.8H43.6V0H33.2V19.2Z" fill="currentColor" />
@@ -35,28 +42,29 @@ const WLogoIcon = () => (
 
 const Footer = () => {
 	const socialLinks = [
-		{icon: Linkedin, href: "#"},
-		{icon: Instagram, href: "#"},
-		{icon: XIcon, href: "#", isCustom: true},
-		{icon: DiscordIcon, href: "#", isCustom: true},
-		{icon: Youtube, href: "#"},
+		{ icon: Github, href: "https://github.com/TuShArBhArDwA" },
+		{ icon: Linkedin, href: "https://www.linkedin.com/in/bhardwajtushar2004/" },
+		{ icon: Coffee, href: "https://buymeacoffee.com/tusharbhardwaj" }, // Buy Me A Coffee
+		{ icon: Youtube, href: "https://www.youtube.com/channel/UCqq8kNn9yKvsl95MeiFPIeg" },
+		{ icon: MediumIcon, href: "https://medium.com/@bhardwajtushar2004", isCustom: true },
+		{ icon: XIcon, href: "https://x.com/Tusharab2004", isCustom: true },
 	];
 
 	const footerLinks = {
 		getStarted: [
-			{label: "REQUEST A DEMO", href: "#"},
-			{label: "PRICING", href: "#"},
-			{label: "ENTERPRISE", href: "#"},
+			{ label: "REQUEST A DEMO", href: "#" },
+			{ label: "PRICING", href: "#" },
+			{ label: "ENTERPRISE", href: "#" },
 		],
 		company: [
-			{label: "ABOUT", href: "#"},
-			{label: "CAREERS", href: "#"},
-			{label: "TRUST", href: "#"},
-			{label: "TERMS", href: "#"},
-			{label: "PRIVACY", href: "#"},
+			{ label: "ABOUT", href: "#" },
+			{ label: "CAREERS", href: "#" },
+			{ label: "TRUST", href: "#" },
+			{ label: "TERMS", href: "#" },
+			{ label: "PRIVACY", href: "#" },
 		],
-		connect: [{label: "COLLECTIVE", href: "#"}],
-		resources: [{label: "KNOWLEDGE CENTER", href: "#"}],
+		connect: [{ label: "COLLECTIVE", href: "#" }],
+		resources: [{ label: "KNOWLEDGE CENTER", href: "#" }],
 	};
 
 	return (
@@ -85,7 +93,7 @@ const Footer = () => {
 						{/* Logo Lockup */}
 						<div className="flex items-center gap-4 shrink-0">
 							<WLogoIcon />
-							<WeavyLogo />
+							<WeaaveLogo />
 							<div className="h-8 w-px bg-white/40 mx-2" />
 							<span className="text-[10px] font-semibold tracking-[0.2em] leading-tight uppercase text-white/90">
 								ARTISTIC
@@ -96,69 +104,17 @@ const Footer = () => {
 
 						{/* Description */}
 						<p className="text-sm leading-relaxed max-w-md text-white/80">
-							Weavy is a new way to create. We&apos;re bridging the gap between AI capabilities and human creativity, to continue the tradition of
+							Weaave is a new way to create. We&apos;re bridging the gap between AI capabilities and human creativity, to continue the tradition of
 							craft in artistic expression. We call it Artistic Intelligence.
 						</p>
 					</div>
 
 					{/* Links Grid */}
-					<div className="grid grid-cols-2 md:grid-cols-6 gap-y-8 gap-x-6 mb-16">
-						{/* Get Started */}
-						<div className="flex flex-col gap-2.5">
-							<h4 className="text-white/50 text-[10px] font-medium uppercase tracking-[0.15em] mb-2">Get Started</h4>
-							{footerLinks.getStarted.map((link, i) => (
-								<a
-									key={i}
-									href={link.href}
-									className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white hover:text-white/70 transition-colors">
-									{link.label}
-								</a>
-							))}
-						</div>
-
-						{/* Company */}
-						<div className="flex flex-col gap-2.5">
-							<h4 className="text-white/50 text-[10px] font-medium uppercase tracking-[0.15em] mb-2">Company</h4>
-							{footerLinks.company.map((link, i) => (
-								<a
-									key={i}
-									href={link.href}
-									className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white hover:text-white/70 transition-colors">
-									{link.label}
-								</a>
-							))}
-						</div>
-
-						{/* Connect */}
-						<div className="flex flex-col gap-2.5">
-							<h4 className="text-white/50 text-[10px] font-medium uppercase tracking-[0.15em] mb-2">Connect</h4>
-							{footerLinks.connect.map((link, i) => (
-								<a
-									key={i}
-									href={link.href}
-									className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white hover:text-white/70 transition-colors">
-									{link.label}
-								</a>
-							))}
-						</div>
-
-						{/* Resources */}
-						<div className="flex flex-col gap-2.5">
-							<h4 className="text-white/50 text-[10px] font-medium uppercase tracking-[0.15em] mb-2">Resources</h4>
-							{footerLinks.resources.map((link, i) => (
-								<a
-									key={i}
-									href={link.href}
-									className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white hover:text-white/70 transition-colors">
-									{link.label}
-								</a>
-							))}
-						</div>
-
-						{/* Social Icons */}
-						<div className="flex gap-5 items-start col-span-2 md:col-span-2 md:justify-start">
+					<div className="flex flex-col gap-6 mb-16">
+						{/* Social Icons (Moved here as main focus since links are removed) */}
+						<div className="flex gap-5 items-start justify-start">
 							{socialLinks.map((social, i) => (
-								<a key={i} href={social.href} className="text-white/80 hover:text-white transition-colors">
+								<a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-white transition-colors">
 									{social.isCustom ? <social.icon /> : <social.icon size={16} strokeWidth={2} />}
 								</a>
 							))}
@@ -185,10 +141,19 @@ const Footer = () => {
 							</div>
 						</div>
 
-						{/* Copyright */}
-						<p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-[#111]/50 mt-4">
-							WEAVY © 2025. <span className="ml-6">ALL RIGHTS RESERVED.</span>
-						</p>
+						{/* Footer Credits */}
+						<div className="flex items-center gap-2 mt-4 text-[12px] font-medium tracking-[0.05em] text-[#111]/70">
+							<span>Fuel the creativity</span>
+							<a
+								href="https://buymeacoffee.com/tusharbhardwaj"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center gap-1 hover:text-[#111] transition-colors border-b border-black/20 hover:border-black/50"
+							>
+								<Coffee size={14} />
+								<span>Buy Me A Coffee</span>
+							</a>
+						</div>
 					</div>
 				</div>
 

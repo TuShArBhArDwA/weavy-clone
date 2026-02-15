@@ -39,12 +39,12 @@ const Header = () => {
           <Link href="/">
             <img
               src={NAV_IMAGES.logoDesktop}
-              alt="Weavy Logo"
+              alt="Weaave Logo"
               className="h-[30px] hidden md:block"
             />
             <img
               src={NAV_IMAGES.logoMobile}
-              alt="Weavy Logo"
+              alt="Weaave Logo"
               className="h-[30px] md:hidden"
             />
           </Link>
@@ -67,11 +67,10 @@ const Header = () => {
 
           <Link
             href="/workflows"
-            className={`bg-[#FDFFA8] text-black flex items-end justify-center tracking-tight transition-all duration-300 rounded-bl-md hover:text-white hover:bg-[#16161c]  ${
-              hasScrolled
+            className={`bg-[#FDFFA8] text-black flex items-end justify-center tracking-tight transition-all duration-300 rounded-bl-md hover:text-white hover:bg-[#16161c]  ${hasScrolled
                 ? 'h-[40px] px-2 text-[13px] pb-1 uppercase'
                 : 'h-[90px] px-4 text-[35px] pb-1'
-            }`}
+              }`}
           >
             Start Now
           </Link>

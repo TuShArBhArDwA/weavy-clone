@@ -1,12 +1,12 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
 import Link from "next/link";
-import {motion, useMotionValueEvent, useScroll} from "framer-motion";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 
 export default function Navbar() {
 	const [isScrolled, setIsScrolled] = useState(false);
-	const {scrollY} = useScroll();
+	const { scrollY } = useScroll();
 
 	// Monitor scroll position to toggle state
 	useMotionValueEvent(scrollY, "change", (latest) => {
@@ -23,7 +23,7 @@ export default function Navbar() {
 			style={{
 				height: isScrolled ? "60px" : "100px",
 			}}
-			transition={{duration: 0.3, ease: "easeInOut"}}>
+			transition={{ duration: 0.3, ease: "easeInOut" }}>
 			<div className="mx-auto h-full flex items-start justify-between">
 				{/* Left: Logo Group */}
 				<div className="flex items-center gap-4">
@@ -32,7 +32,7 @@ export default function Navbar() {
 					</div>
 
 					<div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-						<span className="font-bold text-2xl tracking-tight leading-none">Weavy</span>
+						<span className="font-bold text-2xl tracking-tight leading-none">Weaave</span>
 
 						{/* The vertical divider line */}
 						<div className="hidden md:block h-5 w-px bg-black/10"></div>
@@ -71,7 +71,7 @@ export default function Navbar() {
 						animate={{
 							scale: isScrolled ? 0.9 : 1,
 						}}
-						transition={{duration: 0.3}}
+						transition={{ duration: 0.3 }}
 						className="flex items-center">
 						<Link
 							href="/workflows"
@@ -92,7 +92,7 @@ export default function Navbar() {
 								animate={{
 									marginTop: isScrolled ? 0 : 24, // 24px ≈ mt-6
 								}}
-								transition={{duration: 0.3, ease: "easeInOut"}}
+								transition={{ duration: 0.3, ease: "easeInOut" }}
 								className="block w-full text-left mx-1.5">
 								Start Now
 							</motion.span>

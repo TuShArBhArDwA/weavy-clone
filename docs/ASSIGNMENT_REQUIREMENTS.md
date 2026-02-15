@@ -1,4 +1,4 @@
-# Weavy.ai Clone — Full Assignment Requirements
+# Weaave.ai Clone — Full Assignment Requirements
 
 > **Reference file** — All 13 pages of the assignment consolidated here.
 
@@ -6,7 +6,7 @@
 
 ## 1. Project Overview
 
-Develop a pixel-perfect UI/UX clone of [Weavy.ai](https://weavy.ai) workflow builder, focused exclusively on LLM workflows. Must use:
+Develop a pixel-perfect UI/UX clone of [Weaave.ai](https://weaave.ai) workflow builder, focused exclusively on LLM workflows. Must use:
 - **React Flow** for visual workflow canvas
 - **Google Gemini API** for LLM execution via **Trigger.dev**
 - Type-safe APIs, proper state management, authentication, seamless UX
@@ -17,7 +17,7 @@ Develop a pixel-perfect UI/UX clone of [Weavy.ai](https://weavy.ai) workflow bui
 
 | Requirement | Description |
 |---|---|
-| **Pixel-Perfect UI** | Match Weavy's UI exactly — background, layout, spacing, fonts, node designs, animations, scrolling |
+| **Pixel-Perfect UI** | Match Weaave's UI exactly — background, layout, spacing, fonts, node designs, animations, scrolling |
 | **Left Sidebar** | Collapsible sidebar with search and quick access section for node types |
 | **Right Sidebar** | Workflow History Panel — shows list of all workflow runs with timestamps |
 | **Workflow Canvas** | React Flow with dot grid background, smooth panning/zooming, and MiniMap |
@@ -217,7 +217,7 @@ This workflow demonstrates all 6 node types with **parallel execution** and a **
 | Trigger.dev | ALL node execution MUST use Trigger.dev |
 | Transloadit | File uploads and media processing |
 | FFmpeg | Image/video processing (via Trigger.dev) |
-| Tailwind CSS | Styling (match Weavy's theme exactly) |
+| Tailwind CSS | Styling (match Weaave's theme exactly) |
 | Zustand | State management |
 | Zod | Schema validation |
 | Google Generative AI | `@google/generative-ai` package |
@@ -258,7 +258,7 @@ This workflow demonstrates all 6 node types with **parallel execution** and a **
 
 ## 11. Deliverables Checklist
 
-- [ ] Pixel-perfect Weavy clone UI (exact spacing/colors)
+- [ ] Pixel-perfect Weaave clone UI (exact spacing/colors)
 - [ ] **Clerk authentication** with protected routes
 - [ ] Left sidebar with **6 buttons** (Text, Upload Image, Upload Video, LLM, Crop Image, Extract Frame)
 - [ ] **Right sidebar** with workflow history panel

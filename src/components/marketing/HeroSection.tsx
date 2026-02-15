@@ -27,7 +27,7 @@ export default function HeroSection() {
 					<div className="flex flex-col md:flex-row md:items-start md:gap-16 lg:gap-24">
 						{/* Left: Brand Name */}
 						<div className="shrink-0">
-							<h1 className="text-[clamp(3rem,15vw,8rem)] font-normal leading-[0.9] tracking-tight text-foreground">Weavy</h1>
+							<h1 className="text-[clamp(3rem,15vw,8rem)] font-normal leading-[0.9] tracking-tight text-foreground">Weaave</h1>
 						</div>
 
 						{/* Right: Tagline + Description */}
