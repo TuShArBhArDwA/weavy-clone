@@ -3,7 +3,9 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![React Flow](https://img.shields.io/badge/React_Flow-12-purple)
 ![Trigger.dev](https://img.shields.io/badge/Trigger.dev-Enabled-green)
-![help](https://github.com/user-attachments/assets/6ab768b5-cf0f-416e-be80-a450f1e63094)
+
+![help](https://github.com/user-attachments/assets/0b02ef9d-c5d8-430d-a598-fc1e88cc3a9b)
+
 
 A pixel-perfect clone of [Weaave.ai](https://weaave.ai) — a visual workflow builder for LLM-powered automations. Built with React Flow, Google Gemini AI, and Trigger.dev.
 
