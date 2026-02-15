@@ -1,4 +1,5 @@
-# Weave - Visual AI Workflow Builder
+# Weaave - Visual AI Workflow Builder
+![help](https://github.com/user-attachments/assets/6ab768b5-cf0f-416e-be80-a450f1e63094)
 
 A pixel-perfect clone of [Weavy.ai](https://weavy.ai) — a visual workflow builder for LLM-powered automations. Built with React Flow, Google Gemini AI, and Trigger.dev.
 
