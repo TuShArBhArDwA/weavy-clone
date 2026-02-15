@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     // This tells the bundler: "Skip packaging these, they are already installed"
     external: ["@prisma/client", "prisma", "ffmpeg-static"],
+    extensions: [prismaExtension({ schema: "prisma/schema.prisma" })],
   },
   // The max compute seconds a task is allowed to run. If the task run exceeds this duration, it will be stopped.
   // You can override this on an individual task.

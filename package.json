@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "trigger:dev": "npx trigger.dev@latest dev --skip-update-check",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "deploy:trigger": "npx trigger.dev@latest deploy"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.7",
