@@ -2,7 +2,7 @@
 
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Handle, Position, NodeProps, useReactFlow, useUpdateNodeInternals } from "@xyflow/react";
-import { Bot, Plus, Loader2, MoreHorizontal, Check, Copy, Trash2, X } from "lucide-react";
+import { Bot, Plus, Loader2, MoreHorizontal, Check, Copy, Trash2, X, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LLMNodeData, LLMNodeType, TextNodeData, ImageNodeData, CropImageNodeData, ExtractFrameNodeData } from "@/lib/types";
 import { useWorkflowStore } from "@/store/workflowStore";
