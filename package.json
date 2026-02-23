@@ -14,7 +14,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.36.7",
     "@google/generative-ai": "^0.24.1",
-    "@trigger.dev/sdk": "4.3.3",
+    "@trigger.dev/sdk": "4.4.1",
     "@types/uuid": "^10.0.0",
     "@xyflow/react": "^12.10.0",
     "@prisma/client": "^5.22.0",
@@ -37,7 +37,7 @@
     "ffmpeg-static": "^5.2.0"
   },
   "devDependencies": {
-    "@trigger.dev/build": "4.3.3",
+    "@trigger.dev/build": "4.4.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
