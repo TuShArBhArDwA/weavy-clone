@@ -18,6 +18,7 @@ export default function HistorySidebar({ workflowId, isOpen, onClose }: HistoryS
 	const [expandedRunId, setExpandedRunId] = useState<string | null>(null);
 	const updateNodeData = useWorkflowStore((state) => state.updateNodeData);
 	const lastRunTimestamp = useWorkflowStore((state) => state.lastRunTimestamp);
+	const setIsGlobalRunning = useWorkflowStore((state) => state.setIsGlobalRunning);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
@@ -36,6 +37,11 @@ export default function HistorySidebar({ workflowId, isOpen, onClose }: HistoryS
 
 				const latestRun = res.runs[0];
 				if (latestRun) {
+
+					// Toggle Global Run state based on the latest run status
+					const isAnyRunActive = latestRun.status === "RUNNING" || latestRun.status === "PENDING";
+					setIsGlobalRunning(isAnyRunActive);
+
 					latestRun.nodes.forEach((execNode: any) => {
 						if (execNode.status === "SUCCESS" && execNode.output) {
 							updateNodeData(execNode.nodeId, {
@@ -55,15 +61,9 @@ export default function HistorySidebar({ workflowId, isOpen, onClose }: HistoryS
 							updateNodeData(execNode.nodeId, { status: "loading" });
 						}
 					});
-
-					// Removed: Logic that stops polling if run is finished.
-					// We want to KEEP polling to see NEW runs if user clicks "Run" again.
-					// if (latestRun.status === "COMPLETED" || latestRun.status === "FAILED") {
-					// 	if (intervalRef.current) {
-					// 		clearInterval(intervalRef.current);
-					// 		intervalRef.current = null;
-					// 	}
-					// }
+				} else {
+					// No runs at all
+					setIsGlobalRunning(false);
 				}
 			}
 		};

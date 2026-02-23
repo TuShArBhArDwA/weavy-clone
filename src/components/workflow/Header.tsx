@@ -8,7 +8,7 @@ import LoadWorkflowModal from "./LoadWorkflowModal";
 import { WorkflowData } from "@/lib/schemas";
 
 export default function Header() {
-	const { nodes, edges, workflowId, workflowName, setWorkflowId, setWorkflowName, setNodes, setEdges, setLastRunTimestamp } = useWorkflowStore();
+	const { nodes, edges, workflowId, workflowName, isGlobalRunning, setWorkflowId, setWorkflowName, setNodes, setEdges, setLastRunTimestamp } = useWorkflowStore();
 	const [isSaving, setIsSaving] = useState(false);
 	const [isRunning, setIsRunning] = useState(false);
 	const [isLoadOpen, setIsLoadOpen] = useState(false);
@@ -162,6 +162,9 @@ export default function Header() {
 		URL.revokeObjectURL(url);
 	}, [nodes, edges, workflowName]);
 
+	// Compute disabled state
+	const isRunButtonDisabled = isSaving || isRunning || isGlobalRunning;
+
 	return (
 		<>
 			<header className="flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[#111]">
@@ -240,10 +243,10 @@ export default function Header() {
 					{/* 👇 RUN BUTTON RESTORED */}
 					<button
 						onClick={handleRun}
-						disabled={isSaving || isRunning}
+						disabled={isRunButtonDisabled}
 						className="flex items-center gap-2 px-4 py-2 bg-[#dfff4f] text-black text-xs font-bold rounded-lg hover:bg-white transition-all disabled:opacity-50 hover:scale-105 active:scale-95 shadow-[0_0_10px_rgba(223,255,79,0.2)]">
-						{isRunning ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
-						{isRunning ? "RUNNING..." : "RUN"}
+						{isRunButtonDisabled ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} fill="currentColor" />}
+						{isRunButtonDisabled ? "RUNNING..." : "RUN"}
 					</button>
 				</div>
 			</header>

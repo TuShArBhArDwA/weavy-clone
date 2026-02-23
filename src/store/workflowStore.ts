@@ -40,6 +40,8 @@ type WorkflowState = {
     clearUserData: () => void;
     lastRunTimestamp: number | null;
     setLastRunTimestamp: (timestamp: number) => void;
+    isGlobalRunning: boolean;
+    setIsGlobalRunning: (isRunning: boolean) => void;
 };
 
 // Initial Data - Empty canvas
@@ -160,6 +162,10 @@ export const useWorkflowStore = create<WorkflowState>()(
                 lastRunTimestamp: null,
                 setLastRunTimestamp: (timestamp: number) => {
                     set({ lastRunTimestamp: timestamp });
+                },
+                isGlobalRunning: false,
+                setIsGlobalRunning: (isRunning: boolean) => {
+                    set({ isGlobalRunning: isRunning });
                 },
             }),
             {

@@ -312,6 +312,11 @@ export default function LLMNode({ id, data, isConnectable, selected }: NodeProps
 							<div className="flex items-center justify-center h-full">
 								<Loader2 size={20} className="animate-spin text-white/30" />
 							</div>
+						) : data.status === "error" ? (
+							<div className="flex flex-col items-center justify-center h-full text-center px-4">
+								<AlertCircle size={20} className="text-red-400 mb-2" />
+								<span className="text-xs text-red-400">{data.errorMessage || "An error occurred"}</span>
+							</div>
 						) : data.status === "success" && data.outputs && data.outputs.length > 0 ? (
 							<div className="w-full text-xs text-white/80 font-mono leading-relaxed whitespace-pre-wrap break-words">
 								{data.outputs[data.outputs.length - 1].content}
