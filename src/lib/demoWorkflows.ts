@@ -125,7 +125,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'Vision Analyst',
                         status: 'idle',
-                        model: 'gemini-2.5-flash',
+                        model: 'gemini-1.5-flash',
                         imageHandleCount: 3,
                         outputs: [],
                         temperature: 0.4,
@@ -141,7 +141,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'Amazon Listing',
                         status: 'idle',
-                        model: 'gemini-2.5-flash',
+                        model: 'gemini-1.5-flash',
                         outputs: [],
                         temperature: 0.7,
                         viewMode: 'single',
@@ -156,7 +156,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'Instagram Caption',
                         status: 'idle',
-                        model: 'gemini-2.5-flash',
+                        model: 'gemini-1.5-flash',
                         outputs: [],
                         temperature: 0.9,
                         viewMode: 'single',
@@ -171,7 +171,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'SEO Meta Description',
                         status: 'idle',
-                        model: 'gemini-2.5-flash',
+                        model: 'gemini-1.5-flash',
                         outputs: [],
                         temperature: 0.5,
                         viewMode: 'single',

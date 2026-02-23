@@ -144,7 +144,15 @@ export default function LLMNode({ id, data, isConnectable, selected }: NodeProps
 				if (sourceNode.type === "imageNode" && edge.targetHandle?.startsWith("image")) {
 					const imageData = sourceNode.data as ImageNodeData;
 					const imageUrl = imageData.file?.url || imageData.image;
-					if (imageUrl) imageUrls.push(imageUrl as string);
+					if (imageUrl) {
+						// If it's a local demo image, we MUST convert it to base64 so Trigger.dev backend can read it
+						if (typeof imageUrl === 'string' && imageUrl.startsWith("/")) {
+							const base64 = await urlToBase64(imageUrl);
+							imageUrls.push(base64);
+						} else {
+							imageUrls.push(imageUrl as string);
+						}
+					}
 				}
 
 				// NEW: Handle inputs from Crop/Extract/Video nodes
