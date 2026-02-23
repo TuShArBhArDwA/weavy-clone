@@ -1,0 +1,101 @@
+// 1. Configuration
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------------
+// 2. USER (The "Mirror" of Clerk)
+// --------------------------------------------------------
+model User {
+  // We use the string ID from Clerk (e.g., "user_2pM...") as the primary key
+  id        String   @id 
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  workflows Workflow[]
+
+  @@map("users")
+}
+
+// --------------------------------------------------------
+// 3. WORKFLOW (The Definition)
+// --------------------------------------------------------
+model Workflow {
+  id          Int      @id @default(autoincrement()) // SERIAL
+  name        String   @db.VarChar(255)
+  data        Json     // Stores the React Flow JSON (Nodes & Edges)
+  
+  // Relations
+  userId      String   @map("user_id") @db.VarChar(255)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  runs        WorkflowRun[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("workflows")
+}
+
+// --------------------------------------------------------
+// 4. WORKFLOW RUN (The History - Right Sidebar)
+// --------------------------------------------------------
+// Represents one full execution of the workflow (e.g., "Run #123")
+model WorkflowRun {
+  id          String   @id @default(uuid()) // Use UUID for unique run IDs
+  
+  workflowId  Int      @map("workflow_id")
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  triggerType String   @default("MANUAL") // "MANUAL", "SCHEDULED"
+  status      String   // "PENDING", "RUNNING", "COMPLETED", "FAILED"
+  
+  startedAt   DateTime @default(now()) @map("started_at")
+  finishedAt  DateTime? @map("finished_at")
+  
+  // Execution details for every single node in this run
+  nodeExecutions NodeExecution[]
+
+  @@map("workflow_runs")
+}
+
+// --------------------------------------------------------
+// 5. NODE EXECUTION (Granular Details)
+// --------------------------------------------------------
+// Tracks what happened in a specific node (e.g., "Crop Image Node failed")
+model NodeExecution {
+  id          String   @id @default(uuid())
+  
+  runId       String   @map("run_id")
+  run         WorkflowRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  nodeId      String   // The React Flow node ID (e.g., "node-1")
+  nodeType    String   // "crop-image", "llm", "upload"
+  nodeLabel   String?  // "Marketing Copy"
+  
+  status      String   // "PENDING", "RUNNING", "SUCCESS", "FAILED"
+  
+  // What went in and what came out (Crucial for debugging)
+  inputData   Json?    @map("input_data")
+  outputData  Json?    @map("output_data")
+  
+  error       String?  // If failed, why?
+  
+  startedAt   DateTime @default(now()) @map("started_at")
+  finishedAt  DateTime? @map("finished_at")
+  duration    Int?     // In milliseconds
+
+  @@index([runId])
+  @@map("node_executions")
+}
