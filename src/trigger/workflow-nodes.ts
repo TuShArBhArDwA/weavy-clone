@@ -77,9 +77,10 @@ export const aiGenerator = task({
                 text: text,
             };
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(`[Worker] Gemini Failed:`, error);
-            throw error; // Throwing allows Trigger.dev to show it as "Failed" in dashboard
+            // Throwing allows Trigger.dev to show it as "Failed" in dashboard
+            throw new Error(error.message || "Failed to generate AI content");
         }
     },
 });

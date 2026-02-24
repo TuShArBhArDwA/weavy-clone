@@ -398,3 +398,49 @@ export async function executeNodeAction(nodeType: string, data: any) {
         return { success: false, error: "Failed to execute node." };
     }
 }
+
+// ------------------------------------------------------------------
+// CANCEL RUN ACTION (Trigger.dev)
+// ------------------------------------------------------------------
+export async function cancelWorkflowAction(runId: string) {
+    try {
+        const { userId } = await auth();
+        if (!userId) return { success: false, error: "Unauthorized" };
+
+        console.log(`[Action] Attempting to cancel run: ${runId}`);
+
+        // 1. Cancel the Trigger.dev Run directly
+        try {
+            await runs.cancel(runId);
+        } catch (triggerError) {
+            console.warn(`[Action] Could not cancel Trigger.dev run ${runId}, it may already be completed or failed. Error:`, triggerError);
+        }
+
+        // 2. Update Database Run State
+        const updatedRun = await prisma.workflowRun.update({
+            where: { id: runId },
+            data: { status: "FAILED", finishedAt: new Date() } // Mark as failed due to cancellation
+        });
+
+        // 3. Update any straggling "RUNNING" nodes to "FAILED"
+        await prisma.nodeExecution.updateMany({
+            where: {
+                runId: runId,
+                status: "RUNNING"
+            },
+            data: {
+                status: "FAILED",
+                finishedAt: new Date(),
+                error: "Run was manually cancelled."
+            }
+        });
+
+        console.log(`[Action] Run ${runId} cancelled successfully.`);
+        revalidatePath(`/workflows/${updatedRun.workflowId}`);
+        return { success: true };
+
+    } catch (error) {
+        console.error("Cancel Workflow Error:", error);
+        return { success: false, error: "Failed to cancel workflow run." };
+    }
+}

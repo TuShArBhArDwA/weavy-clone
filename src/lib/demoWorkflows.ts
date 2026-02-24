@@ -3,7 +3,7 @@ import { Edge } from "@xyflow/react";
 
 export const DEMO_WORKFLOWS = [
     {
-        id: "demo-product-listing",
+        id: "",
         name: "Product Listing Generator",
         description: "Generate SEO, Social, and Description from product images.",
         thumbnail: "🎯",

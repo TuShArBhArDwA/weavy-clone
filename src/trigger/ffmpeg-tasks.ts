@@ -214,6 +214,19 @@ export const extractFrameTask = task({
             // Extract using local file. Put -ss BEFORE -i for fast seeking.
             await execAsync(`"${ffmpegPath}" -y -ss ${finalTimestamp} -i "${inputPath}" -frames:v 1 -q:v 2 "${outputPath}"`);
 
+            // Check if output file was created and is not empty
+            try {
+                const stat = await fs.stat(outputPath);
+                if (stat.size === 0) {
+                    throw new Error(`FFmpeg created an empty file. The timestamp ${timestamp} might be outside the video's actual length.`);
+                }
+            } catch (err: any) {
+                if (err.code === 'ENOENT') {
+                    throw new Error(`Failed to extract frame at timestamp: ${timestamp}. This usually means the timestamp is outside the video's actual duration.`);
+                }
+                throw err;
+            }
+
             // Upload
             const url = await uploadToTransloaditServer(outputPath, "frame.jpg", "image/jpeg");
 

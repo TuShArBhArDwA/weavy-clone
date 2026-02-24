@@ -179,25 +179,37 @@ export const orchestrator = task({
 
                         if (node.type === "llmNode") {
                             // Gather Inputs from Context
-                            let aggregatedText = "";
+                            let aggregatedSystemPrompt = "";
                             let aggregatedImages: string[] = [];
+                            let mainPrompt = node.data.prompt; // Built-in prompt from LLM node properties
+                            let hasIncomingMainPrompt = false;
 
                             for (const edge of incomingEdges) {
                                 const sourceData = context[edge.source];
                                 if (!sourceData) continue;
+
                                 if (sourceData.text) {
                                     if (edge.targetHandle === "system-prompt") {
-                                        aggregatedText = `[System Context]: ${sourceData.text}\n\n` + aggregatedText;
+                                        aggregatedSystemPrompt += `[System Context]: ${sourceData.text}\n\n`;
+                                    } else if (edge.targetHandle === "prompt" || edge.targetHandle === "user_message" || !edge.targetHandle) {
+                                        // If a Text node connects to the main prompt handle, it should BECOME the main prompt
+                                        if (!hasIncomingMainPrompt) {
+                                            mainPrompt = sourceData.text; // Override default
+                                            hasIncomingMainPrompt = true;
+                                        } else {
+                                            mainPrompt += `\n\n${sourceData.text}`; // Append if multiple connect
+                                        }
                                     } else {
-                                        aggregatedText += `\n[Context]: ${sourceData.text}`;
+                                        // Fallback for unknown text connections
+                                        mainPrompt += `\n[Context]: ${sourceData.text}`;
                                     }
                                 }
                                 if (sourceData.imageUrls) aggregatedImages.push(...sourceData.imageUrls);
                             }
 
                             handle = await aiGenerator.trigger({
-                                prompt: node.data.prompt || "Analyze this.",
-                                systemPrompt: aggregatedText,
+                                prompt: mainPrompt || "Analyze this.",
+                                systemPrompt: aggregatedSystemPrompt.trim(),
                                 imageUrls: aggregatedImages,
                                 model: node.data.model || "gemini-1.5-flash",
                                 temperature: node.data.temperature
@@ -262,7 +274,18 @@ export const orchestrator = task({
                                     data: { status: "SUCCESS", finishedAt: new Date(), outputData: result.output as any }
                                 });
                             } else if (result.status === "FAILED" || result.status === "CRASHED" || result.status === "TIMED_OUT") {
-                                throw new Error(result.error ? String(JSON.stringify(result.error)) : "Task failed with status " + result.status);
+                                // Extract the cleanest possible error string from the Trigger.dev result payload
+                                let cleanError = `Task failed with status ${result.status}`;
+                                if (result.error) {
+                                    if (typeof result.error === 'string') {
+                                        cleanError = result.error;
+                                    } else if (typeof result.error === 'object' && result.error !== null) {
+                                        // Trigger.dev often wraps the original Error message here
+                                        const errObj = result.error as any;
+                                        cleanError = errObj.message || errObj.name || JSON.stringify(errObj);
+                                    }
+                                }
+                                throw new Error(cleanError);
                             } else {
                                 throw new Error("Task ended with unexpected status: " + result.status);
                             }
@@ -272,7 +295,7 @@ export const orchestrator = task({
                         console.error(`❌ Node ${node.id} Failed:`, error);
                         await prisma.nodeExecution.update({
                             where: { id: executionRecord.id },
-                            data: { status: "FAILED", finishedAt: new Date(), error: String(error) }
+                            data: { status: "FAILED", finishedAt: new Date(), error: error instanceof Error ? error.message : String(error) }
                         });
                         workflowFailed = true; // Global flag to stop new nodes
                         throw error; // Reject Promise to cascade failure downstream
@@ -311,11 +334,11 @@ export const orchestrator = task({
                     data: { status: "FAILED", finishedAt: new Date() }
                 });
                 // Do NOT throw to prevent Orchestrator Retry
-                return { success: false, error: String(error) };
+                return { success: false, error: error instanceof Error ? error.message : String(error) };
             }
         } catch (error) {
             console.error("Top-level Error:", error);
-            return { success: false, error: String(error) };
+            return { success: false, error: error instanceof Error ? error.message : String(error) };
         }
     },
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { X, Clock, ChevronRight, ChevronDown, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { X, Clock, ChevronRight, ChevronDown, Loader2, CheckCircle2, XCircle, StopCircle } from "lucide-react";
 import { getWorkflowHistoryAction } from "@/app/actions/historyActions";
 import { useWorkflowStore } from "@/store/workflowStore";
 import { cn } from "@/lib/utils";
@@ -137,6 +137,22 @@ export default function HistorySidebar({ workflowId, isOpen, onClose }: HistoryS
 								</div>
 							</div>
 							<div className="flex items-center gap-2">
+								{(run.status === "RUNNING" || run.status === "PENDING") && (
+									<button
+										onClick={async (e) => {
+											e.stopPropagation();
+											if (confirm("Are you sure you want to cancel this run?")) {
+												// Optimistic update of global ui
+												setIsGlobalRunning(false);
+												await import("@/app/actions/workflowActions").then(m => m.cancelWorkflowAction(run.id));
+											}
+										}}
+										className="p-1 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded transition-colors"
+										title="Cancel Run"
+									>
+										<StopCircle size={14} />
+									</button>
+								)}
 								<span className="text-[10px] text-white/30 font-mono bg-black/20 px-1.5 py-0.5 rounded">{run.duration}</span>
 								{expandedRunId === run.id ? (
 									<ChevronDown size={14} className="text-white/50" />
