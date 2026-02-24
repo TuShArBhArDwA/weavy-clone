@@ -368,7 +368,18 @@ export async function executeNodeAction(nodeType: string, data: any) {
                 revalidatePath(`/workflows/${workflowId}`);
                 return { success: true, output: completedRun.output };
             } else {
-                throw new Error((completedRun.output as any)?.error || "Task returned failure");
+                let cleanError = `Task failed with status ${completedRun.status}`;
+                if (completedRun.error) {
+                    if (typeof completedRun.error === 'string') {
+                        cleanError = completedRun.error;
+                    } else if (typeof completedRun.error === 'object' && completedRun.error !== null) {
+                        const errObj = completedRun.error as any;
+                        cleanError = errObj.message || errObj.name || JSON.stringify(errObj);
+                    }
+                } else if ((completedRun.output as any)?.error) {
+                    cleanError = (completedRun.output as any).error;
+                }
+                throw new Error(cleanError);
             }
 
         } catch (taskError: any) {

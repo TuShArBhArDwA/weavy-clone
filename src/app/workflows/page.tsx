@@ -81,6 +81,28 @@ export default function DashboardPage() {
         }
     };
 
+    const handleLoadDemo = async (demo: typeof DEMO_WORKFLOWS[0]) => {
+        setCreating(true);
+        try {
+            const { nodes, edges } = demo.getGraph();
+            const result = await saveWorkflowAction({
+                name: demo.name,
+                nodes,
+                edges,
+            });
+            if (result.success && result.id) {
+                router.push(`/workflows/${result.id}`);
+            } else {
+                alert(`Failed to create workflow: ${result.error}`);
+                setCreating(false);
+            }
+        } catch (error) {
+            console.error("Error creating demo workflow:", error);
+            alert("Something went wrong.");
+            setCreating(false);
+        }
+    };
+
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -169,10 +191,11 @@ export default function DashboardPage() {
 
                         <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide">
                             {DEMO_WORKFLOWS.map((demo) => (
-                                <Link
+                                <button
                                     key={demo.id}
-                                    href={`/workflows/${demo.id}`}
-                                    className="group relative min-w-[200px] md:min-w-[240px] aspect-[16/10] rounded-xl overflow-hidden border border-white/5 bg-[#111] transition-all hover:border-white/20"
+                                    onClick={() => handleLoadDemo(demo)}
+                                    disabled={creating}
+                                    className="group relative min-w-[200px] md:min-w-[240px] aspect-[16/10] rounded-xl overflow-hidden border border-white/5 bg-[#111] transition-all hover:border-white/20 text-left disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {/* Image Background */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
@@ -200,7 +223,7 @@ export default function DashboardPage() {
                                             {demo.description}
                                         </p>
                                     </div>
-                                </Link>
+                                </button>
                             ))}
                         </div>
                     </section>

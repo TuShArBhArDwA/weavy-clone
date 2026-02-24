@@ -3,7 +3,7 @@ import { Edge } from "@xyflow/react";
 
 export const DEMO_WORKFLOWS = [
     {
-        id: "",
+        id: "demo-product-listing",
         name: "Product Listing Generator",
         description: "Generate SEO, Social, and Description from product images.",
         thumbnail: "🎯",
@@ -20,7 +20,7 @@ export const DEMO_WORKFLOWS = [
                         label: 'Front View',
                         status: 'success',
                         inputType: 'upload',
-                        image: '/demo/shoe-front.jpg'
+                        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop'
                     }
                 },
                 {
@@ -31,7 +31,7 @@ export const DEMO_WORKFLOWS = [
                         label: 'Side View',
                         status: 'success',
                         inputType: 'upload',
-                        image: '/demo/shoe-side.jpg'
+                        image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop'
                     }
                 },
                 {
@@ -42,7 +42,7 @@ export const DEMO_WORKFLOWS = [
                         label: 'Detail View',
                         status: 'success',
                         inputType: 'upload',
-                        image: '/demo/shoe-detail.jpg'
+                        image: 'https://images.unsplash.com/photo-1600269452121-4f2416e55c28?q=80&w=800&auto=format&fit=crop'
                     }
                 },
 
@@ -125,7 +125,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'Vision Analyst',
                         status: 'idle',
-                        model: 'gemini-1.5-flash',
+                        model: 'gemini-2.5-flash',
                         imageHandleCount: 3,
                         outputs: [],
                         temperature: 0.4,
@@ -141,7 +141,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'Amazon Listing',
                         status: 'idle',
-                        model: 'gemini-1.5-flash',
+                        model: 'gemini-2.5-flash',
                         outputs: [],
                         temperature: 0.7,
                         viewMode: 'single',
@@ -156,7 +156,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'Instagram Caption',
                         status: 'idle',
-                        model: 'gemini-1.5-flash',
+                        model: 'gemini-2.5-flash',
                         outputs: [],
                         temperature: 0.9,
                         viewMode: 'single',
@@ -171,7 +171,7 @@ Do not write marketing copy yet. Just output the raw facts and visual details.`
                     data: {
                         label: 'SEO Meta Description',
                         status: 'idle',
-                        model: 'gemini-1.5-flash',
+                        model: 'gemini-2.5-flash',
                         outputs: [],
                         temperature: 0.5,
                         viewMode: 'single',

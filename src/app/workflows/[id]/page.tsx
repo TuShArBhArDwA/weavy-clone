@@ -52,6 +52,7 @@ export default function EditorPage() {
 					// Set ID to null so hitting "Save" creates a NEW entry
 					workflowId: null,
 					workflowName: demo.name, // Set the initial name from demo
+					isGlobalRunning: false, // Reset run lock from previous workflow
 				});
 
 				setLoading(false);
@@ -67,6 +68,7 @@ export default function EditorPage() {
 					edges: [],
 					workflowId: null,
 					workflowName: "Untitled Workflow", // Reset name for new workflow
+					isGlobalRunning: false,
 				});
 				setLoading(false);
 				return;
@@ -89,6 +91,7 @@ export default function EditorPage() {
 							edges: flowData.edges || [],
 							workflowId: workflowId,
 							workflowName: (res as any).name || "Untitled Workflow",
+							isGlobalRunning: false,
 						});
 					}
 				} else {
@@ -99,6 +102,7 @@ export default function EditorPage() {
 						edges: [],
 						workflowId: null,
 						workflowName: "Untitled Workflow",
+						isGlobalRunning: false,
 					});
 				}
 			} catch (error) {
@@ -109,6 +113,7 @@ export default function EditorPage() {
 					edges: [],
 					workflowId: null,
 					workflowName: "Untitled Workflow",
+					isGlobalRunning: false,
 				});
 			} finally {
 				setLoading(false);
