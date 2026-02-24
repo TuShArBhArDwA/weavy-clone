@@ -116,267 +116,205 @@ export const orchestrator = task({
         let workflowFailed = false;
 
         try {
-            // 5. Execution Loop (Layer by Layer)
-            for (const [index, layer] of layers.entries()) {
-                if (workflowFailed) {
-                    console.log("🛑 [Orchestrator] Workflow failed, skipping remaining layers.");
-                    break;
-                }
-                console.log(`⚡ [Orchestrator] Executing Layer ${index + 1} with ${layer.length} nodes`);
+            try {
+                // 5. Execution Loop (True DAG Parallel Execution)
+                // Instead of rigid "layers", we map every node to a Promise.
+                // A node's Promise simply awaits the Promises of its specific incoming dependencies,
+                // then executes itself. This allows independent branches to run completely unblocked.
 
-                // Run all nodes in this layer executing concurrently
-                // Strategy: Trigger all tasks first (Parallel), then poll results sequentially (Serial Wait)
+                const sortedNodes = layers.flat(); // Topologically sorted flat list
+                const nodePromises = new Map<string, Promise<void>>();
 
-                const pendingTasks: {
-                    node: NodeData;
-                    executionId: string;
-                    handle: any;
-                    taskType: "llm" | "crop" | "extract"
-                }[] = [];
+                const executeNodeAsync = async (node: NodeData): Promise<void> => {
+                    // 1. Wait for specific dependencies to finish
+                    const incomingEdges = edges.filter((e) => e.target === node.id);
+                    for (const edge of incomingEdges) {
+                        const depPromise = nodePromises.get(edge.source);
+                        if (depPromise) {
+                            try {
+                                await depPromise;
+                            } catch (e) {
+                                // If a strictly required dependency failed, we cannot continue.
+                                // We throw to propagate the failure cascade down this specific branch.
+                                throw new Error(`Dependency ${edge.source} failed.`);
+                            }
+                        }
+                    }
 
-                // 1. TRIGGER PHASE (Parallel)
-                // We map over the layer to trigger tasks, but passive nodes are handled immediately.
-                // Note: We use a for-loop for passive nodes to keep context sync simple, 
-                // but for ACTIVE nodes we collect promises to trigger them in parallel if needed?
-                // Actually, `await tasks.trigger` is an API call. Serial triggering is fast enough, 
-                // but strictly speaking "simultaneously" implies Promise.all(triggers).
+                    if (workflowFailed) return; // Fast abort if global failure triggered
 
-                // Let's prepare all triggers first
-                const triggerPromises: Promise<void>[] = [];
+                    console.log(`⚡ [Orchestrator] Executing Node: ${node.type} (${node.id})`);
 
-                for (const node of layer) {
-                    console.log(`  Processing Node: ${node.type} (${node.id})`);
-
-                    // --- A. PASSIVE NODES (Immediate) ---
+                    // --- A. PASSIVE NODES (Immediate Memory Write) ---
                     if (node.type === "textNode") {
                         context[node.id] = { text: node.data.text };
-                        continue;
+                        return;
                     }
                     if (node.type === "imageNode") {
                         const url = node.data.file?.url || node.data.image;
                         if (url) context[node.id] = { imageUrls: [url] };
-                        continue;
+                        return;
                     }
                     if (node.type === "videoNode") {
                         const url = node.data.file?.url;
                         if (url) context[node.id] = { videoUrl: url };
-                        continue;
+                        return;
                     }
 
-                    // --- B. ACTIVE NODES (Prepare & Queue Trigger) ---
-                    const triggerFn = async () => {
-                        // Create DB Record first
-                        const executionRecord = await prisma.nodeExecution.create({
-                            data: {
-                                runId: run.id,
-                                nodeId: node.id,
-                                nodeType: node.type,
-                                status: "RUNNING",
-                                startedAt: new Date(),
-                                inputData: node.data
-                            }
-                        });
-
-                        try {
-                            if (node.type === "llmNode") {
-                                // Gather Inputs (Synchronous from context)
-                                const incomingEdges = edges.filter((e) => e.target === node.id);
-                                let aggregatedText = "";
-                                let aggregatedImages: string[] = [];
-
-                                for (const edge of incomingEdges) {
-                                    const sourceData = context[edge.source];
-                                    if (!sourceData) continue;
-                                    if (sourceData.text) {
-                                        if (edge.targetHandle === "system-prompt") {
-                                            aggregatedText = `[System Context]: ${sourceData.text}\n\n` + aggregatedText;
-                                        } else {
-                                            aggregatedText += `\n[Context]: ${sourceData.text}`;
-                                        }
-                                    }
-                                    if (sourceData.imageUrls) aggregatedImages.push(...sourceData.imageUrls);
-                                }
-
-                                const handle = await aiGenerator.trigger({
-                                    prompt: node.data.prompt || "Analyze this.",
-                                    systemPrompt: aggregatedText,
-                                    imageUrls: aggregatedImages,
-                                    model: node.data.model || "gemini-1.5-flash",
-                                    temperature: node.data.temperature
-                                });
-
-                                pendingTasks.push({ node, executionId: executionRecord.id, handle, taskType: "llm" });
-                            }
-
-                            else if (node.type === "cropImageNode") {
-                                const incomingEdges = edges.filter((e) => e.target === node.id);
-                                let inputImageUrl = node.data.imageUrl;
-                                for (const edge of incomingEdges) {
-                                    const sourceData = context[edge.source];
-                                    if (sourceData?.imageUrls?.[0]) {
-                                        inputImageUrl = sourceData.imageUrls[0];
-                                        break;
-                                    }
-                                }
-                                if (!inputImageUrl) throw new Error("No input image");
-
-                                const handle = await cropImageTask.trigger({
-                                    imageUrl: inputImageUrl,
-                                    x: node.data.xPercent || 0,
-                                    y: node.data.yPercent || 0,
-                                    width: node.data.widthPercent || 100,
-                                    height: node.data.heightPercent || 100
-                                });
-
-                                pendingTasks.push({ node, executionId: executionRecord.id, handle, taskType: "crop" });
-                            }
-
-                            else if (node.type === "extractFrameNode") {
-                                const incomingEdges = edges.filter((e) => e.target === node.id);
-                                let inputVideoUrl = node.data.videoUrl;
-                                for (const edge of incomingEdges) {
-                                    const sourceData = context[edge.source];
-                                    if (sourceData?.videoUrl) {
-                                        inputVideoUrl = sourceData.videoUrl;
-                                        break;
-                                    }
-                                }
-                                if (!inputVideoUrl) throw new Error("No input video");
-
-                                const handle = await extractFrameTask.trigger({
-                                    videoUrl: inputVideoUrl,
-                                    timestamp: node.data.timestamp || 0
-                                });
-
-                                pendingTasks.push({ node, executionId: executionRecord.id, handle, taskType: "extract" });
-                            }
-                        } catch (error) {
-                            console.error(`❌ Node ${node.id} Trigger Failed:`, error);
-                            await prisma.nodeExecution.update({
-                                where: { id: executionRecord.id },
-                                data: { status: "FAILED", finishedAt: new Date(), error: String(error) }
-                            });
-                            workflowFailed = true; // Mark global failure
-                            // Do NOT throw, allowing other parallel tasks to potentially finish or fail gracefully
+                    // --- B. ACTIVE NODES (Trigger.dev Subtasks) ---
+                    const executionRecord = await prisma.nodeExecution.create({
+                        data: {
+                            runId: run.id,
+                            nodeId: node.id,
+                            nodeType: node.type,
+                            status: "RUNNING",
+                            startedAt: new Date(),
+                            inputData: node.data
                         }
-                    };
+                    });
 
-                    triggerPromises.push(triggerFn());
-                }
-
-                // If any trigger failed immediately (sync error), stop.
-                if (workflowFailed) break;
-
-                // Execute all triggers in parallel
-                if (triggerPromises.length > 0) {
-                    await Promise.all(triggerPromises);
-                }
-
-                // 2. POLLING PHASE (Sequential Wait)
-                for (const task of pendingTasks) {
                     try {
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        const result = await runs.poll(task.handle); // aiGenerator.poll is generic enough or use runs.poll?
-                        // Actually, better use generic runs.poll(task.handle) but the generated SDK might not have it exposed easily on the task object?
-                        // 'aiGenerator' is a specific task. 'runs' is invalid here?
-                        // We need to use valid poll method. The output of task.trigger is a handle.
-                        // Assuming aiGenerator.poll(handle) works similarly to triggerAndWait internals but allows manual polling?
-                        // No, Trigger.dev SDK v3 `task.trigger` returns a handle. To poll, we usually use `runs.poll(handle)`.
-                        // But I need to import `runs` from "@trigger.dev/sdk/v3". I did not import it.
-                        // Wait, orchestrator imports `task` but not `runs`.
-                        // I NEED TO IMPORT `runs`.
-                        // Wait, previous code used `runs.poll` in `workflowActions.ts`.
-                        // But `orchestrator.ts` runs IN THE CLOUD.
-                        // Does `runs` exist in the cloud task environment?
-                        // Yes, `@trigger.dev/sdk/v3` exports `runs`.
-                    } catch (e) {
-                        // handled below
-                    }
-                }
+                        let handle: any = null;
+                        let taskType: "llm" | "crop" | "extract" | null = null;
 
-                // RE-WRITING THE LOOP TO USE runs.poll
-                // I need to make sure `runs` is imported.
-                // Since I can't check imports easily in replace_file, I will assume `runs` is NOT imported and add it later?
-                // No, I need it NOW.
-                // Wait, I can use `task.triggerAndWait` logic from `workflowActions.ts` reference?
-                // In workflowActions I imported `runs`.
-                // In orchestrator.ts I only see `import { task } from ...`.
-                // I MUST UPDATE IMPORTS FIRST.
+                        if (node.type === "llmNode") {
+                            // Gather Inputs from Context
+                            let aggregatedText = "";
+                            let aggregatedImages: string[] = [];
 
-                // STOP. I will cancel this replacement and update imports first.
-                // But I can't cancel. I must complete this replacement validly.
-                // I will assume `runs` is available or I will use `task.trigger` which usually returns a handle that I can use with `runs`.
-                // I'll add `import { runs } ...` at the top in a separate edit?
-                // No, I should do it all.
-                // I will use `runs.poll` in the code, and then immediately fix the imports.
-
-                // Actually, I can use `task.triggerAndWait` but I specifically want to SPLIT trigger and wait.
-                // There is no `task.poll`. There is `runs.poll`.
-
-                // I will proceed with the logic using `runs.poll` and then update the imports.
-
-                for (const task of pendingTasks) {
-                    try {
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        const result = await runs.poll(task.handle);
-
-                        if (result.status === "COMPLETED") {
-                            if (task.taskType === "llm") {
-                                context[task.node.id] = { text: result.output.text };
-                            } else if (task.taskType === "crop" || task.taskType === "extract") {
-                                context[task.node.id] = { imageUrls: [result.output.url] };
+                            for (const edge of incomingEdges) {
+                                const sourceData = context[edge.source];
+                                if (!sourceData) continue;
+                                if (sourceData.text) {
+                                    if (edge.targetHandle === "system-prompt") {
+                                        aggregatedText = `[System Context]: ${sourceData.text}\n\n` + aggregatedText;
+                                    } else {
+                                        aggregatedText += `\n[Context]: ${sourceData.text}`;
+                                    }
+                                }
+                                if (sourceData.imageUrls) aggregatedImages.push(...sourceData.imageUrls);
                             }
 
-                            await prisma.nodeExecution.update({
-                                where: { id: task.executionId },
-                                data: { status: "SUCCESS", finishedAt: new Date(), outputData: result.output as any }
+                            handle = await aiGenerator.trigger({
+                                prompt: node.data.prompt || "Analyze this.",
+                                systemPrompt: aggregatedText,
+                                imageUrls: aggregatedImages,
+                                model: node.data.model || "gemini-1.5-flash",
+                                temperature: node.data.temperature
                             });
-                        } else if (result.status === "FAILED" || result.status === "CRASHED" || result.status === "TIMED_OUT") {
-                            throw new Error(result.error ? String(JSON.stringify(result.error)) : "Task failed with status " + result.status);
-                        } else {
-                            // If still running/queued after poll returns (shouldn't happen with poll), treat as error or loop?
-                            // runs.poll waits until completion.
-                            throw new Error("Task ended with unexpected status: " + result.status);
+                            taskType = "llm";
                         }
+
+                        else if (node.type === "cropImageNode") {
+                            let inputImageUrl = node.data.imageUrl;
+                            for (const edge of incomingEdges) {
+                                const sourceData = context[edge.source];
+                                if (sourceData?.imageUrls?.[0]) {
+                                    inputImageUrl = sourceData.imageUrls[0];
+                                    break;
+                                }
+                            }
+                            if (!inputImageUrl) throw new Error("No input image");
+
+                            handle = await cropImageTask.trigger({
+                                imageUrl: inputImageUrl,
+                                x: node.data.xPercent || 0,
+                                y: node.data.yPercent || 0,
+                                width: node.data.widthPercent || 100,
+                                height: node.data.heightPercent || 100
+                            });
+                            taskType = "crop";
+                        }
+
+                        else if (node.type === "extractFrameNode") {
+                            let inputVideoUrl = node.data.videoUrl;
+                            for (const edge of incomingEdges) {
+                                const sourceData = context[edge.source];
+                                if (sourceData?.videoUrl) {
+                                    inputVideoUrl = sourceData.videoUrl;
+                                    break;
+                                }
+                            }
+                            if (!inputVideoUrl) throw new Error("No input video");
+
+                            handle = await extractFrameTask.trigger({
+                                videoUrl: inputVideoUrl,
+                                timestamp: node.data.timestamp || 0
+                            });
+                            taskType = "extract";
+                        }
+
+                        if (handle && taskType) {
+                            // Poll sequentially within this specific Node's branch timeline
+                            // @ts-ignore
+                            const result = await runs.poll(handle);
+
+                            if (result.status === "COMPLETED") {
+                                // Save payload to Context memory for downstream nodes
+                                if (taskType === "llm") {
+                                    context[node.id] = { text: result.output.text };
+                                } else if (taskType === "crop" || taskType === "extract") {
+                                    context[node.id] = { imageUrls: [result.output.url] };
+                                }
+
+                                await prisma.nodeExecution.update({
+                                    where: { id: executionRecord.id },
+                                    data: { status: "SUCCESS", finishedAt: new Date(), outputData: result.output as any }
+                                });
+                            } else if (result.status === "FAILED" || result.status === "CRASHED" || result.status === "TIMED_OUT") {
+                                throw new Error(result.error ? String(JSON.stringify(result.error)) : "Task failed with status " + result.status);
+                            } else {
+                                throw new Error("Task ended with unexpected status: " + result.status);
+                            }
+                        }
+
                     } catch (error) {
-                        console.error(`❌ Node ${task.node.id} Poll Failed:`, error);
+                        console.error(`❌ Node ${node.id} Failed:`, error);
                         await prisma.nodeExecution.update({
-                            where: { id: task.executionId },
+                            where: { id: executionRecord.id },
                             data: { status: "FAILED", finishedAt: new Date(), error: String(error) }
                         });
-                        workflowFailed = true;
+                        workflowFailed = true; // Global flag to stop new nodes
+                        throw error; // Reject Promise to cascade failure downstream
                     }
+                };
+
+                // 6. Launch all nodes concurrently. 
+                // Because they await their dependencies internally, they will orchestrate themselves perfectly.
+                for (const node of sortedNodes) {
+                    nodePromises.set(node.id, executeNodeAsync(node));
                 }
 
-                if (workflowFailed) break; // Break layer loop
-            }
+                // 7. Await the entire graph
+                await Promise.allSettled(Array.from(nodePromises.values()));
 
-            // 6. Complete Run
-            if (workflowFailed) {
-                console.log("🛑 [Orchestrator] Run marked as FAILED due to node errors.");
+                // 8. Complete Global Run
+                if (workflowFailed) {
+                    console.log("🛑 [Orchestrator] Run marked as FAILED due to node errors.");
+                    await prisma.workflowRun.update({
+                        where: { id: run.id },
+                        data: { status: "FAILED", finishedAt: new Date() }
+                    });
+                    return { success: false, error: "Workflow failed due to node errors" };
+                } else {
+                    await prisma.workflowRun.update({
+                        where: { id: run.id },
+                        data: { status: "COMPLETED", finishedAt: new Date() }
+                    });
+                    return { success: true };
+                }
+
+            } catch (error) {
+                console.error("Workflow Run Warning/Error:", error);
                 await prisma.workflowRun.update({
                     where: { id: run.id },
                     data: { status: "FAILED", finishedAt: new Date() }
                 });
-                // Return failure but do NOT throw to prevent Task Retry
-                return { success: false, error: "Workflow failed due to node errors" };
-            } else {
-                await prisma.workflowRun.update({
-                    where: { id: run.id },
-                    data: { status: "COMPLETED", finishedAt: new Date() }
-                });
-                return { success: true };
+                // Do NOT throw to prevent Orchestrator Retry
+                return { success: false, error: String(error) };
             }
-
         } catch (error) {
-            console.error("Workflow Run Warning/Error:", error);
-            await prisma.workflowRun.update({
-                where: { id: run.id },
-                data: { status: "FAILED", finishedAt: new Date() }
-            });
-            // Do NOT throw to prevent Orchestrator Retry
+            console.error("Top-level Error:", error);
             return { success: false, error: String(error) };
         }
     },
