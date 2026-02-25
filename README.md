@@ -11,7 +11,15 @@ A pixel-perfect clone of [Weaave.ai](https://weaave.ai) — a visual workflow bu
 
 
 
-**Watch the Demo:** [Click here to watch](https://drive.google.com/file/d/1nvQmwF1iAUaH0JjeI3jRUtwsZ-R7XV3T/view?usp=sharing)
+**Demo Video (App Walkthrough):**
+https://drive.google.com/file/d/1nvQmwF1iAUaH0JjeI3jRUtwsZ-R7XV3T/view?usp=sharing
+
+**Workflow & Parallel Execution Explanation:**
+https://www.loom.com/share/8477ddcaf092496b9cdf5df1c54947e7
+
+> The first video gives a full, user-friendly walkthrough of all sections of the app.
+> The second video focuses specifically on the workflow logic and true parallel execution.
+
 
 ---
 
