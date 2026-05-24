@@ -145,4 +145,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Connect with me
 
-If you'd like to connect, feel free to reach out — [Click here](https://minianonlink.vercel.app/tusharbhardwaj)
+If you'd like to connect, feel free to reach out — [Click here](https://link.minianon.in/tusharbhardwaj)
